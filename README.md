@@ -21,6 +21,13 @@ Divido la isola in tot sottoaree, e faccio spawnare tot. omini a random. Ogni om
 ## spawn delle piante
 game of plants da decidere/random
 
+## Criteri di spostamento
+Griglia di probabilità: ogni omino al suo turno da un punteggio alle caselle intorno a lui, e sceglie probabilisticamente in quale delle caselle andare. Punteggio piante: Fame * vicinanza. Punteggio Stessa tribù: (Socievolezza + fame)*vicinanza ; Punteggio altra tribù (Forza + fame)*vicinanza.
+## Superparametri
+turni di vita, visuale, fame massima, pop. iniziale, tribù iniziali, mutability rate (0,02)
+## Riproduzione
+Valori medi delle caratteristiche dei genitori con un piccolo margine di mutazione (random) + mutability.  
+
 
 
 
