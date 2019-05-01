@@ -1,0 +1,11 @@
+Struttura ad albero:
+-Classe isolaDiPasqua 
+  classe interfacciaIsola (per poter settare i superparametri dopo aver avviato il programma)
+  classe mappone (contiene la matrice per aggiornare la posizione delle entità)
+    m:scannerizza, meMovo, abbello
+    Matrice
+      classe entità (coordinate, metodi grafici)
+        :classe omino (tribù, fame, forza, socievolezza)
+         m: getters, setters, cheDevoFa
+        :classe pianta
+        
