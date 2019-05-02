@@ -1,0 +1,11 @@
+-I nomi dei metodi devono essere divertenti
+-Si commenta ogni metodo a prova di eventuali ritardi mentali dei compagni
+-Si indenta BENE cioè regà
+-Si aprono le graffe sulla stessa riga: tipo         public static ciao () {
+-Non si chiudono due graffe sulla stessa riga a meno che non siano classi anonime/locali/lambda
+-per i nomi dei metodi, la prima lettera è minuscola, le iniziali delle parole dopo maiuscole. 
+-per le classi tutte le iniziali sono maiuscole
+-variabili: nomi in minuscolo separati da underscore
+-nomi chiari
+-NO TERNANO
+-
