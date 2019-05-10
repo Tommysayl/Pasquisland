@@ -1,15 +1,20 @@
 package sgs.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class MainUI extends Stage {
 	
 	
 	private Table main_table;
+	private Table game_screen_table;
+	private Label fps;
 	private Skin skin;
 
 	public MainUI(Skin skin, Viewport viewport) {
@@ -26,45 +31,27 @@ public class MainUI extends Stage {
 	
 	private void buildUI() {
 		main_table = new Table(skin);
-		String ascii_art = 
-				"                  __..-----')\n" + 
-				"        ,.--._ .-'_..--...-'\n" + 
-				"       '-\"'. _/_ /  ..--''\"\"'-.\n" + 
-				"       _.--\"\"...:._:(_ ..:\"::. \\\n" + 
-				"    .-' ..::--\"\"_(##)#)\"':. \\ \\)    \\ _|_ /\n" + 
-				"   /_:-:'/  :__(##)##)    ): )   '-./'   '\\.-'\n" + 
-				"   \"  / |  :' :/\"\"\\///)  /:.'    --(       )--\n" + 
-				"     / :( :( :(   (#//)  \"       .-'\\.___./'-.\n" + 
-				"    / :/|\\ :\\_:\\   \\#//\\            /  |  \\\n" + 
-				"    |:/ | \"\"--':\\   (#//)              '\n" + 
-				"    \\/  \\ :|  \\ :\\  (#//)\n" + 
-				"         \\:\\   '.':. \\#//\\\n" + 
-				"          ':|    \"--'(#///)\n" + 
-				"                     (#///)\n" + 
-				"                     (#///)         ___/\"\"\\     \n" + 
-				"                      \\#///\\           oo##\n" + 
-				"                      (##///)         `-6 #\n" + 
-				"                      (##///)          ,'`.\n" + 
-				"                      (##///)         // `.\\\n" + 
-				"                      (##///)        ||o   \\\\\n" + 
-				"                       \\##///\\        \\-+--//\n" + 
-				"                       (###///)       :_|_(/\n" + 
-				"                       (sjw////)__...--:: :...__\n" + 
-				"                       (#/::'''        :: :     \"\"--.._\n" + 
-				"                  __..-'''           __;: :            \"-._\n" + 
-				"          __..--\"\"                  `---/ ;                '._\n" + 
-				" ___..--\"\"                             `-'                    \"-..___\n" + 
-				"\n" + 
-				"   (_ \"\"---....___                                     __...--\"\" _)\n" + 
-				"     \"\"\"--...  ___\"\"\"\"\"-----......._______......----\"\"\"     --\"\"\"\n" + 
-				"                   \"\"\"\"       ---.....   ___....----\n"+
-				"non so perche sta ascii art sfaciola...";
-		main_table.add(ascii_art).expand();
-		main_table.add("qua ci vanno grafici interfaccia e robe varie").expand();
+		game_screen_table = new Table(skin);
+		fps = new Label("FPS",skin);
+		
+		game_screen_table.add(fps).left().top().expand();
+		//game_screen_table.setFillParent(true);
+		main_table.add(game_screen_table).expand().fill().bottom().left();
+		main_table.add("qua ci vanno grafici interfaccia e robe varie");
 		
 		main_table.setFillParent(true);
+		game_screen_table.validate();
+		main_table.validate();
 		addActor(main_table);
 		setDebugAll(true);
+	}
+	
+	public void setGameScreenViewport(FillViewport game_vp) {
+		game_vp.setScreenSize((int)(game_screen_table.getWidth()* getViewport().getScreenWidth() / getViewport().getWorldWidth()), 
+				getViewport().getScreenHeight());
+		game_vp.setWorldSize(game_vp.getScreenWidth(), game_vp.getScreenHeight());
+		game_vp.setScreenPosition(getViewport().getLeftGutterWidth(), getViewport().getBottomGutterHeight());
+		game_vp.apply();
 	}
 
 }
