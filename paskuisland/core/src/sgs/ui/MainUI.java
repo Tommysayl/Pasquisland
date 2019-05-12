@@ -42,6 +42,7 @@ public class MainUI extends Stage {
 		main_table.setFillParent(true);
 		game_screen_table.validate();
 		main_table.validate();
+		main_table.layout();
 		addActor(main_table);
 		setDebugAll(true);
 	}
@@ -51,7 +52,6 @@ public class MainUI extends Stage {
 				getViewport().getScreenHeight());
 		game_vp.setWorldSize(game_vp.getScreenWidth(), game_vp.getScreenHeight());
 		game_vp.setScreenPosition(getViewport().getLeftGutterWidth(), getViewport().getBottomGutterHeight());
-		game_vp.apply();
 	}
 
 }

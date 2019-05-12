@@ -6,12 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import sgs.map.WorldMap;
+import sgs.map.Mappone;
 import sgs.ui.MainUI;
 
 /**
@@ -29,10 +28,11 @@ public class Pasquisland extends ApplicationAdapter {
 	MainUI ui;
 	Skin skin;
 	
-	WorldMap map;
-	
 	SpriteBatch batch;
 	ShapeRenderer rend;
+	
+	Mappone mappone;
+
 	
 	@Override
 	public void create () {
@@ -46,16 +46,12 @@ public class Pasquisland extends ApplicationAdapter {
 		
 		skin = new Skin(Gdx.files.internal("skins/metal/metal-ui.json"));
 		ui = new MainUI(skin, new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), new SpriteBatch());
+		ui.draw(); // QUESTO RISOLVE IL BUG DEL RESIZE
 		
 		batch = new SpriteBatch();
 		rend = new ShapeRenderer();
-		
-		float[] terrain_values = new float[3];
-		terrain_values[0] = .3f;
-		terrain_values[1] = .4f;
-		terrain_values[2] = .7f;
-		map = new WorldMap(map_width, map_height, (int) System.currentTimeMillis(),
-				200f, 4, .3f, 2f, Vector2.Zero, terrain_values);
+	
+		mappone = new Mappone(map_width, map_height);
 	}
 
 	@Override
@@ -67,8 +63,7 @@ public class Pasquisland extends ApplicationAdapter {
 		vp.apply();
 		cam_mov.update();
 		rend.setProjectionMatrix(camera.combined);
-		int map_sight[] = cam_mov.computeMapSight();
-		map.render(rend, map_sight[0], map_sight[1], map_sight[2], map_sight[3]);
+		mappone.disegnaTutto(batch, rend, cam_mov.computeMapSight());
 		camera.update();
 		
 		ui.getViewport().apply();
