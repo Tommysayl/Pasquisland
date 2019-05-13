@@ -24,9 +24,7 @@ public class WorldMap {
 	public static final int shallow_water_id = 1;
 	public static final int sand_id = 2;
 	public static final int land_id = 3;
-	public static final int mountain_id = 4;
-	public static final int high_mountain_id = 5;
-	
+
 	//***** GENERAL 
 	float[][] map;
 	
@@ -37,15 +35,12 @@ public class WorldMap {
 	TextureRegionDrawable map_drawable; // are always 256*256
 	float water_p;
 	float sand_p;
-	float land_p;
 	
 	//***** COLORS AND RENDERING
 	Color water_col = new Color(55f/255f,155f/255f,255f/255f,1);
 	Color shallow_water_col = new Color(105f/255f,205f/255f,255f/255f,1);
 	Color sand_col = new Color(1,228/255f,181/255f,1);
 	Color land_col = new Color(105f/255f,179f/255f,38f/255f,1);
-	Color mountain_col = new Color(100/255f,100/255f,100/255f,1);
-	Color high_mountain_col = new Color(200/255f, 220/255f, 255/255f, 1);
 	
 	//***** MAP SPECIFICS
 	int seed;
@@ -53,6 +48,7 @@ public class WorldMap {
 	float scale;
 	float persistence;
 	float lacunarity;
+	float gaussian_smooth;
 	Vector2 offset;
 	
 	//***** INTERNAL
@@ -61,15 +57,15 @@ public class WorldMap {
 	boolean apply_gaussian;
 	
 	
-	public WorldMap(int width, int height, int s,float scal, int oct, float pers, float lac, Vector2 offset, float[] terrain_p, boolean gaussian) {
-		resetMapGenSettings(width, height, s, scal, oct, pers, lac, offset, gaussian);
+	public WorldMap(int width, int height, int s,float scal, int oct, float pers, float lac, Vector2 offset, float[] terrain_p, boolean gaussian, float gauss_val) {
+		resetMapGenSettings(width, height, s, scal, oct, pers, lac, offset, gaussian, gauss_val);
 		resetMapSettings(terrain_p);
 		map = new float[height][width];
 		map_pixmap = new Pixmap(mini_map_pixel_size, mini_map_pixel_size, Format.RGB888);
 		generateMap();
 	}
 
-	public void resetMapGenSettings(int width, int height, int s, float scal, int oct, float pers,float lac, Vector2 offset, boolean gaussian) {
+	public void resetMapGenSettings(int width, int height, int s, float scal, int oct, float pers,float lac, Vector2 offset, boolean gaussian, float gauss_val) {
 		this.mapWidth = width;
 		this.mapHeight = height;
 		this.seed = s;
@@ -80,17 +76,17 @@ public class WorldMap {
 		this.offset = offset;
 		this.apply_gaussian = gaussian;
 		this.settings_changed = true;
+		this.gaussian_smooth = gauss_val;
 	}
 	
-	public void resetMapSettings(float water, float sand, float land) {
+	public void resetMapSettings(float water, float sand) {
 		water_p = water;
 		sand_p = sand;
-		land_p = land;
 		this.color_changed = true;
 	}
 	
 	public void resetMapSettings(float[] perc) {
-		resetMapSettings(perc[0], perc[1], perc[2]);
+		resetMapSettings(perc[0], perc[1]);
 		this.color_changed = true;
 	}
 	
@@ -150,9 +146,8 @@ public class WorldMap {
 						if (y > mapHeight/2) ym = (mapHeight - y) / (float)(mapHeight/2);
 						else ym = y / (float)(mapHeight/2);
 						
-						float softness = 0.1f;
-						map[y][x] *= (float) (Math.pow(Math.E, softness * -1f/(xm*xm)));
-						map[y][x] *= (float) (Math.pow(Math.E, softness * -1f/(ym*ym)));
+						map[y][x] *= (float) (Math.pow(Math.E, gaussian_smooth * -1f/(xm*xm)));
+						map[y][x] *= (float) (Math.pow(Math.E, gaussian_smooth * -1f/(ym*ym)));
 					}
 				}
 			}
@@ -191,12 +186,8 @@ public class WorldMap {
 			return shallow_water_col;
 		else if (map[y][x] < sand_p)
 			return sand_col;
-		else if (map[y][x] < land_p)
+		else 
 			return land_col;
-		else if (map[y][x] < 1 - (1-land_p)/3)
-			return mountain_col;
-		else
-			return high_mountain_col;
 	}
 	
 	public int getTerrainTypeAt(int x, int y) {
@@ -206,12 +197,8 @@ public class WorldMap {
 			return shallow_water_id;
 		else if (map[y][x] < sand_p)
 			return sand_id;
-		else if (map[y][x] < land_p)
-			return land_id;
-		else if (map[y][x] < 1 - (1-land_p)/3)
-			return mountain_id;
 		else
-			return high_mountain_id;
+			return land_id;
 	}
 	
 	public float getTerrainHeightAt(int x, int y) {
@@ -228,6 +215,10 @@ public class WorldMap {
 	
 	public int getSeed() {
 		return seed;
+	}
+	
+	public float getGaussianSmoothness() {
+		return gaussian_smooth;
 	}
 	
 }

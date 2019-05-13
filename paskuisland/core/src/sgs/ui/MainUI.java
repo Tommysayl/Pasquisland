@@ -7,36 +7,45 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import sgs.map.WorldMap;
 import sgs.pasquisland.Pasquisland;
+import sgs.ui.MultiSlider.MultiSliderStyle;
 
 public class MainUI extends Stage {
 	
-	
+	//******* MAIN UI
 	private Table main_table;
 	private Table ui_table;
 	private Table game_screen_table;
 	
 	private Label fps;
 	
+	//******* SETTINGS UI
 	private TextField seed;
+	private MultiSlider terrain;
+	private Slider gaussian;
+	private CheckBox apply_gaussian;
+	
+	//******** SIMULATION UI
 	
 	private Skin skin;
 
 	public MainUI(Skin skin, Viewport viewport) {
 		super(viewport);
 		this.skin = skin;
-		buildUI();
+		buildMainUI();
 		buildSettingsUI();
 		main_table.setFillParent(true);
 		game_screen_table.validate();
@@ -49,7 +58,7 @@ public class MainUI extends Stage {
 	public MainUI(Skin skin, Viewport viewport, Batch batch) {
 		super(viewport, batch);
 		this.skin = skin;
-		buildUI();
+		buildMainUI();
 		buildSettingsUI();
 		main_table.setFillParent(true);
 		game_screen_table.validate();
@@ -59,7 +68,7 @@ public class MainUI extends Stage {
 		setDebugAll(true);
 	}
 	
-	private void buildUI() {
+	private void buildMainUI() {
 		getRoot().addCaptureListener(new InputListener() {
 		    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 		        if (!(event.getTarget() instanceof TextField)) setKeyboardFocus(null);
@@ -79,8 +88,12 @@ public class MainUI extends Stage {
 	}
 	
 	private void buildSettingsUI() {
+		apply_gaussian = new CheckBox(" Apply Gaussian? ", skin);
+		apply_gaussian.setChecked(true);
+		gaussian = new Slider(0.001f, .2f, .01f, false, skin);
+		gaussian.setValue(.1f);
+		terrain = new MultiSlider(2, 0, .45f, .005f, false, new MultiSliderStyle(skin.get("default-horizontal", SliderStyle.class)));
 		TextButton seed_button = new TextButton(" Random! ", skin);
-		seed_button.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {seed.setText(((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(9999999)+"");updateMap();}});
 		seed = new TextField(""+((Pasquisland) Gdx.app.getApplicationListener()).getMappone().getMap().getSeed(), skin);
 		seed.setMaxLength(7);
 		seed.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
@@ -89,11 +102,29 @@ public class MainUI extends Stage {
 		ChangeListener updateMapListener = new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {updateMap();}}; 
 
 		seed.addListener(updateMapListener);
-		
+		terrain.addListener(updateMapListener);
+		gaussian.addListener(updateMapListener);
+		apply_gaussian.addListener(updateMapListener);
+		seed_button.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {seed.setText(((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(9999999)+"");updateMap();}});
+		start.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {startSimulation();}});
+
+		ui_table.add(apply_gaussian).colspan(3).row();
+		ui_table.add(" Gaussian value ");
+		ui_table.add(gaussian).colspan(2).row();
+		ui_table.add(" Terrain Specs: ");
+		ui_table.add(terrain).colspan(2).row();
 		ui_table.add(" Seed: ");
 		ui_table.add(seed).pad(5);
 		ui_table.add(seed_button).row();
 		ui_table.add(start).pad(10).colspan(3);
+	}
+	
+	private void buildSimulationUI() {
+		TextButton stop = new TextButton(" Stop Simulation ", skin);
+		
+		stop.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {stopSimulation();}});
+
+		ui_table.add(stop);
 	}
 	
 	private void updateMap() {
@@ -105,8 +136,11 @@ public class MainUI extends Stage {
 		catch(Exception ex) {
 			
 		}
+		float[] terrain_vals = java.util.Arrays.copyOf(terrain.getKnobPositions(), 3);
+		terrain_vals[2] = 1f;
+		map.resetMapSettings(terrain_vals);
 		map.resetMapGenSettings(
-				map.getWidth(),map.getHeight(), seed_val,200,4,.3f, 2f, Vector2.Zero,true);
+				map.getWidth(),map.getHeight(), seed_val,200,4,.3f, 2f, Vector2.Zero,apply_gaussian.isChecked(), gaussian.getValue());
 		map.generateMap();
 	}
 	
@@ -115,6 +149,20 @@ public class MainUI extends Stage {
 				getViewport().getScreenHeight());
 		game_vp.setWorldSize(game_vp.getScreenWidth(), game_vp.getScreenHeight());
 		game_vp.setScreenPosition(getViewport().getLeftGutterWidth(), getViewport().getBottomGutterHeight());
+	}
+	
+	private void startSimulation() {
+		ui_table.clear();
+		buildSimulationUI();
+		main_table.layout();
+		Gdx.app.getApplicationListener().resize((int)getWidth(), (int)getHeight());
+	};
+	
+	private void stopSimulation() {
+		ui_table.clear();
+		buildSettingsUI();
+		main_table.layout();
+		Gdx.app.getApplicationListener().resize((int)getWidth(), (int)getHeight());
 	}
 	
 	@Override

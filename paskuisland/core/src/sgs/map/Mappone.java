@@ -33,7 +33,7 @@ public class Mappone {
 		terrain_values[1] = .3f;
 		terrain_values[2] = .9f;
 		map = new WorldMap(map_width, map_height, ((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(1000000),
-				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true);
+				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true, .1f);
 		
 		mappa_entita = new HashMap<Vector2, Array<? extends Entity>>();
 		
@@ -76,5 +76,5 @@ public class Mappone {
 	public WorldMap getMap() {
 		return map;
 	}
-
+	
 }
