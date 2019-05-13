@@ -2,12 +2,14 @@ package sgs.map;
 
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import sgs.entities.Entity;
+import sgs.pasquisland.Pasquisland;
 
 /**
  * 
@@ -27,11 +29,11 @@ public class Mappone {
 
 	public Mappone(int map_width, int map_height) {
 		float[] terrain_values = new float[3];
-		terrain_values[0] = .3f;
-		terrain_values[1] = .4f;
-		terrain_values[2] = .7f;
-		map = new WorldMap(map_width, map_height, (int) System.currentTimeMillis(),
-				200f, 4, .3f, 2f, Vector2.Zero, terrain_values);
+		terrain_values[0] = .2f;
+		terrain_values[1] = .3f;
+		terrain_values[2] = .9f;
+		map = new WorldMap(map_width, map_height, ((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(1000000),
+				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true);
 		
 		mappa_entita = new HashMap<Vector2, Array<? extends Entity>>();
 		
@@ -69,6 +71,10 @@ public class Mappone {
 		}
 		
 		return ecco_la_lista;
+	}
+	
+	public WorldMap getMap() {
+		return map;
 	}
 
 }

@@ -1,7 +1,10 @@
 package sgs.pasquisland;
 
+import java.util.Random;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -27,11 +30,14 @@ public class Pasquisland extends ApplicationAdapter {
 	
 	MainUI ui;
 	Skin skin;
+	InputMultiplexer multi_input;
 	
 	SpriteBatch batch;
 	ShapeRenderer rend;
 	
 	Mappone mappone;
+	
+	Random random;
 
 	
 	@Override
@@ -39,10 +45,12 @@ public class Pasquisland extends ApplicationAdapter {
 		int map_width = 128;
 		int map_height = 128;
 		
+		random = new Random(System.nanoTime());
+		mappone = new Mappone(map_width, map_height);
+		
 		camera = new OrthographicCamera();
 		cam_mov = new CameraMover(camera, map_width, map_height);
 		vp = new FillViewport(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight(), camera);
-		Gdx.input.setInputProcessor(cam_mov);
 		
 		skin = new Skin(Gdx.files.internal("skins/metal/metal-ui.json"));
 		ui = new MainUI(skin, new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), new SpriteBatch());
@@ -51,7 +59,11 @@ public class Pasquisland extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		rend = new ShapeRenderer();
 	
-		mappone = new Mappone(map_width, map_height);
+		
+		multi_input = new InputMultiplexer();
+		multi_input.addProcessor(ui);
+		multi_input.addProcessor(cam_mov);
+		Gdx.input.setInputProcessor(multi_input);
 	}
 
 	@Override
@@ -84,5 +96,13 @@ public class Pasquisland extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		
+	}
+	
+	public Mappone getMappone() {
+		return mappone;
+	}
+	
+	public Random getRandom() {
+		return random;
 	}
 }

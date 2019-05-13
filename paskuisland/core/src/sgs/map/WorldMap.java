@@ -61,8 +61,8 @@ public class WorldMap {
 	boolean apply_gaussian;
 	
 	
-	public WorldMap(int width, int height, int s,float scal, int oct, float pers, float lac, Vector2 offset, float[] terrain_p) {
-		resetMapGenSettings(width, height, s, scal, oct, pers, lac, offset, false);
+	public WorldMap(int width, int height, int s,float scal, int oct, float pers, float lac, Vector2 offset, float[] terrain_p, boolean gaussian) {
+		resetMapGenSettings(width, height, s, scal, oct, pers, lac, offset, gaussian);
 		resetMapSettings(terrain_p);
 		map = new float[height][width];
 		map_pixmap = new Pixmap(mini_map_pixel_size, mini_map_pixel_size, Format.RGB888);
@@ -150,7 +150,9 @@ public class WorldMap {
 						if (y > mapHeight/2) ym = (mapHeight - y) / (float)(mapHeight/2);
 						else ym = y / (float)(mapHeight/2);
 						
-						map[y][x] = map[y][x] * (xm + ym) / 2;
+						float softness = 0.1f;
+						map[y][x] *= (float) (Math.pow(Math.E, softness * -1f/(xm*xm)));
+						map[y][x] *= (float) (Math.pow(Math.E, softness * -1f/(ym*ym)));
 					}
 				}
 			}
@@ -227,4 +229,5 @@ public class WorldMap {
 	public int getSeed() {
 		return seed;
 	}
+	
 }
