@@ -152,6 +152,7 @@ public class MainUI extends Stage {
 	}
 	
 	private void startSimulation() {
+		((Pasquisland) Gdx.app.getApplicationListener()).startSimulation();
 		ui_table.clear();
 		buildSimulationUI();
 		main_table.layout();

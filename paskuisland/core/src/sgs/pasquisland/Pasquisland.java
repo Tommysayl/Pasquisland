@@ -74,6 +74,7 @@ public class Pasquisland extends ApplicationAdapter {
 		//Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight());
 		vp.apply();
 		cam_mov.update();
+		batch.setProjectionMatrix(camera.combined);
 		rend.setProjectionMatrix(camera.combined);
 		mappone.disegnaTutto(batch, rend, cam_mov.computeMapSight());
 		camera.update();
@@ -104,5 +105,9 @@ public class Pasquisland extends ApplicationAdapter {
 	
 	public Random getRandom() {
 		return random;
+	}
+	
+	public void startSimulation() {
+		mappone.spammaOmini(.2f);
 	}
 }
