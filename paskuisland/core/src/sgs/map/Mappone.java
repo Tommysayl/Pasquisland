@@ -99,4 +99,6 @@ public class Mappone {
 		}
 	}
 	
+	public int getPopulationCount() {return da_aggiornare.size;}
+	
 }

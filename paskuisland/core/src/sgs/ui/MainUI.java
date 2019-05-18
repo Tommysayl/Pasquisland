@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -45,6 +47,10 @@ public class MainUI extends Stage {
 	private Skin skin;
 	private ShapeRenderer sr;
 	private boolean is_in_simulation;
+	
+	//
+	private Timer timer = new Timer();
+	private int seconds = 0;
 
 	public MainUI(Skin skin, Viewport viewport) {
 		super(viewport);
@@ -179,6 +185,23 @@ public class MainUI extends Stage {
 	public void act() {
 		super.act();
 		fps.setText("FPS: "+Gdx.graphics.getFramesPerSecond());
+		if (is_in_simulation) {
+			
+			float delay = 1;
+			
+			if (timer.isEmpty()) 
+			{
+				timer.scheduleTask(new Task()
+				{
+				    @Override
+				    public void run() 
+				    {
+				    		pop_graph.addPoint(new Vector2(seconds,((Pasquisland) Gdx.app.getApplicationListener()).getMappone().getPopulationCount()));
+				    		seconds++;
+				    }
+				}, delay);
+			}
+		}
 	}
 	
 	public void draw() {

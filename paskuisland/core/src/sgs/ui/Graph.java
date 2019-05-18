@@ -1,14 +1,11 @@
 package sgs.ui;
 
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.math.MathUtils;
 
 public class Graph extends Table {
 	
@@ -18,7 +15,6 @@ public class Graph extends Table {
 	
 	private Label x_name, y_name;
 	
-	private boolean graphChanged;
 	
 	public Graph(Skin skin, String x_axis, String y_axis) {
 		super(skin);
@@ -73,21 +69,25 @@ public class Graph extends Table {
 	public void addAllPoints(Array<Vector2> npoints) 
 	{
 		this.points.addAll(npoints);
+		updateGraph();
 	}
 	
 	public void addPoint(Vector2 point) 
 	{
 		this.points.add(point);
+		updateGraph();
 	}
 	
 	public void setPoints(Array<Vector2> cpoints) 
 	{
 		this.points = cpoints;
+		updateGraph();
 	}
 	
 	public void clearPoints() 
 	{
 		this.points.clear();
+		updateGraph();
 	}
 	
 	private Vector2 toScreenCoordinates(Vector2 point) {
