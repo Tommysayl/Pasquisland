@@ -131,7 +131,7 @@ public class MainUI extends Stage {
 		
 		stop.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {stopSimulation();}});
 
-		ui_table.add(pop_graph).row();
+		ui_table.add(pop_graph).fill().expand().row();
 		ui_table.add(stop);
 	}
 	

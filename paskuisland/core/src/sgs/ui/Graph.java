@@ -1,5 +1,6 @@
 package sgs.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -26,10 +27,11 @@ public class Graph extends Table {
 		x_name = new Label(x_axis, skin);
 		y_name = new Label(y_axis, skin);
 		
-		MIN_POINT = new Vector2(10,0);
-		MAX_POINT = new Vector2(0,10);
+		MIN_POINT = new Vector2(0,0);
+		MAX_POINT = new Vector2(10,10);
 		
 		add(x_name).top().left().row();
+		add().expand().row();
 		add(y_name).bottom().right();
 		
 		points = new Array<Vector2>();
@@ -55,17 +57,35 @@ public class Graph extends Table {
 				max_y = point.y;
 		}
 		
-		MIN_POINT.set(points.first().x,  min_y);
-		MAX_POINT.set(points.get(points.size-1).x, max_y);
+		MIN_POINT.set(0, 0);
+		MAX_POINT.set(1, 1);
 		
 		screen_points.clear();
 		for (Vector2 point : points) {
-			screen_points.add(toScreenCoordinates(point));
+			screen_points.add(graphToScreenCoordinates(point));
 		}
 	}
 	
 	private void drawGraphLines(ShapeRenderer sr) {
+		Vector2 origin = this.graphToScreenCoordinates(Vector2.Zero);
+		Vector2 Y = this.graphToScreenCoordinates(new Vector2(0,MAX_POINT.y));
+		Vector2 X = this.graphToScreenCoordinates(new Vector2(MAX_POINT.x, 0));
+
+		float[] verts = new float[2*screen_points.size];
+		int i = 0;
+		for (Vector2 point : screen_points) {
+			verts[i] = point.x;
+			verts[i+1] = point.y;
+			i += 2;
+		}
+		sr.begin(ShapeType.Line);
+		sr.line(origin,Y);
+		sr.line(origin, X);
+		if (verts.length >= 2)
+			sr.polyline(verts);
+		sr.end();
 		
+		//Gdx.app.log("GRAPH", "origin :"+origin+" X: "+X);
 	}
 	
 	public void addAllPoints(Array<Vector2> npoints) 
@@ -88,15 +108,13 @@ public class Graph extends Table {
 		this.points.clear();
 	}
 	
-	private Vector2 toScreenCoordinates(Vector2 point) {
+	private Vector2 graphToScreenCoordinates(Vector2 point) {
 		Vector2 screen_point = new Vector2(
 				(point.x - MIN_POINT.x) / MAX_POINT.x, 
-				(point.y - MIN_POINT.y) / MAX_POINT.y);
+				(-point.y - MIN_POINT.y) / MAX_POINT.y);
 		
 		screen_point.scl(getWidth(), getHeight());
-		screen_point.add(getX(), getY());
-		
-		return screen_point;
+		return localToScreenCoordinates(screen_point);
 	}
 
 }
