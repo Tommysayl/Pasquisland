@@ -169,6 +169,7 @@ public class MainUI extends Stage {
 	};
 	
 	private void stopSimulation() {
+		is_in_simulation = false;
 		ui_table.clear();
 		buildSettingsUI();
 		main_table.layout();

@@ -99,4 +99,7 @@ public class Mappone {
 		}
 	}
 	
+	public int quantiVivi() {
+		return da_aggiornare.size;
+	}
 }

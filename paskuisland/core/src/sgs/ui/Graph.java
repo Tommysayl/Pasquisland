@@ -68,8 +68,6 @@ public class Graph extends Table {
 		
 	}
 	
-	
-	
 	public void addAllPoints(Array<Vector2> npoints) 
 	{
 		this.points.addAll(npoints);
