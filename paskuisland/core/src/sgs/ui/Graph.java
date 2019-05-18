@@ -68,8 +68,26 @@ public class Graph extends Table {
 		
 	}
 	
-	private void plotLine() {
-		
+	
+	
+	public void addAllPoints(Array<Vector2> npoints) 
+	{
+		this.points.addAll(npoints);
+	}
+	
+	public void addPoint(Vector2 point) 
+	{
+		this.points.add(point);
+	}
+	
+	public void setPoints(Array<Vector2> cpoints) 
+	{
+		this.points = cpoints;
+	}
+	
+	public void clearPoints() 
+	{
+		this.points.clear();
 	}
 	
 	private Vector2 toScreenCoordinates(Vector2 point) {
