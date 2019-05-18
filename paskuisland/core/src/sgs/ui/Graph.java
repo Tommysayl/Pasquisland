@@ -8,15 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.math.MathUtils;
 
 public class Graph extends Table {
 	
-	private Vector2 MAX_X, MAX_Y;
+	private Vector2 MIN_POINT, MAX_POINT;
 	private Array<Vector2> points;
+	private Array<Vector2> screen_points;
 	
 	private Label x_name, y_name;
-	private Label[] x_labels;
-	private Label[] y_labels;
 	
 	private boolean graphChanged;
 	
@@ -26,11 +26,14 @@ public class Graph extends Table {
 		x_name = new Label(x_axis, skin);
 		y_name = new Label(y_axis, skin);
 		
-		MAX_X = new Vector2(10,0);
-		MAX_Y = new Vector2(0,10);
+		MIN_POINT = new Vector2(10,0);
+		MAX_POINT = new Vector2(0,10);
 		
 		add(x_name).top().left().row();
 		add(y_name).bottom().right();
+		
+		points = new Array<Vector2>();
+		screen_points = new Array<Vector2>();
 	}
 
 	public Graph(Skin skin) {
@@ -41,25 +44,43 @@ public class Graph extends Table {
 		drawGraphLines(sr);
 	}
 	
-	public void act(float delta) {
-		super.act(delta);
-		if (graphChanged)
-			updateGraph();
-	}
-	
 	private void updateGraph() {
+		float min_y = Float.MAX_VALUE;
+		float max_y = Float.MIN_VALUE;
 		
+		for (Vector2 point : points) {
+			if (point.y < min_y)
+				min_y = point.y;
+			if (point.y > max_y)
+				max_y = point.y;
+		}
+		
+		MIN_POINT.set(points.first().x,  min_y);
+		MAX_POINT.set(points.get(points.size-1).x, max_y);
+		
+		screen_points.clear();
+		for (Vector2 point : points) {
+			screen_points.add(toScreenCoordinates(point));
+		}
 	}
 	
 	private void drawGraphLines(ShapeRenderer sr) {
-		sr.begin(ShapeType.Line);
-		sr.line(Vector2.Zero, MAX_X);
-		sr.line(Vector2.Zero, MAX_Y);
-		sr.end();
+		
 	}
 	
 	private void plotLine() {
 		
+	}
+	
+	private Vector2 toScreenCoordinates(Vector2 point) {
+		Vector2 screen_point = new Vector2(
+				(point.x - MIN_POINT.x) / MAX_POINT.x, 
+				(point.y - MIN_POINT.y) / MAX_POINT.y);
+		
+		screen_point.scl(getWidth(), getHeight());
+		screen_point.add(getX(), getY());
+		
+		return screen_point;
 	}
 
 }
