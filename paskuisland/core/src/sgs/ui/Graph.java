@@ -15,8 +15,8 @@ public class Graph extends Table {
 	private Array<Vector2> points;
 	
 	private Label x_name, y_name;
-	private Label[] x_labels;
-	private Label[] y_labels;
+	//private Label[] x_labels;
+	//private Label[] y_labels;
 	
 	private boolean graphChanged;
 	
@@ -58,8 +58,27 @@ public class Graph extends Table {
 		sr.end();
 	}
 	
-	private void plotLine() {
-		
+	
+	
+	public void addAllPoints(Array<Vector2> npoints) 
+	{
+		this.points.addAll(npoints);
 	}
+	
+	public void addPoint(Vector2 point) 
+	{
+		this.points.add(point);
+	}
+	
+	public void setPoints(Array<Vector2> cpoints) 
+	{
+		this.points = cpoints;
+	}
+	
+	public void clearPoints() 
+	{
+		this.points.clear();
+	}
+	
 
 }
