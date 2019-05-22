@@ -2,6 +2,7 @@ package sgs.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Timer;
+import com.badlogic.gdx.utils.Timer.Task;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -39,8 +42,15 @@ public class MainUI extends Stage {
 	private CheckBox apply_gaussian;
 	
 	//******** SIMULATION UI
+	private Graph pop_graph;
 	
 	private Skin skin;
+	private ShapeRenderer sr;
+	private boolean is_in_simulation;
+	
+	//
+	private Timer timer = new Timer();
+	private int seconds = 0;
 
 	public MainUI(Skin skin, Viewport viewport) {
 		super(viewport);
@@ -53,6 +63,7 @@ public class MainUI extends Stage {
 		main_table.layout();
 		addActor(main_table);
 		setDebugAll(true);
+		sr = new ShapeRenderer();
 	}
 
 	public MainUI(Skin skin, Viewport viewport, Batch batch) {
@@ -66,6 +77,7 @@ public class MainUI extends Stage {
 		main_table.layout();
 		addActor(main_table);
 		setDebugAll(true);
+		sr = new ShapeRenderer();
 	}
 	
 	private void buildMainUI() {
@@ -121,9 +133,11 @@ public class MainUI extends Stage {
 	
 	private void buildSimulationUI() {
 		TextButton stop = new TextButton(" Stop Simulation ", skin);
+		pop_graph = new Graph(skin, "population", "time");
 		
 		stop.addListener(new ChangeListener() {public void changed (ChangeEvent event, Actor actor) {stopSimulation();}});
 
+		ui_table.add(pop_graph).fill().expand().row();
 		ui_table.add(stop);
 	}
 	
@@ -152,6 +166,7 @@ public class MainUI extends Stage {
 	}
 	
 	private void startSimulation() {
+		is_in_simulation = true;
 		((Pasquisland) Gdx.app.getApplicationListener()).startSimulation();
 		ui_table.clear();
 		buildSimulationUI();
@@ -160,6 +175,8 @@ public class MainUI extends Stage {
 	};
 	
 	private void stopSimulation() {
+		is_in_simulation = false;
+		((Pasquisland) Gdx.app.getApplicationListener()).stopSimulation();
 		ui_table.clear();
 		buildSettingsUI();
 		main_table.layout();
@@ -170,6 +187,32 @@ public class MainUI extends Stage {
 	public void act() {
 		super.act();
 		fps.setText("FPS: "+Gdx.graphics.getFramesPerSecond());
+		if (is_in_simulation) {
+			
+			float delay = 1;
+			
+			if (timer.isEmpty()) 
+			{
+				timer.scheduleTask(new Task()
+				{
+				    @Override
+				    public void run() 
+				    {
+				    		pop_graph.addPoint(new Vector2(seconds,((Pasquisland) Gdx.app.getApplicationListener()).getMappone().getPopulationCount()));
+				    		seconds++;
+				    }
+				}, delay);
+			}
+		}
+	}
+	
+	public void draw() {
+		super.draw();
+		
+		if (is_in_simulation) {
+			sr.setProjectionMatrix(getViewport().getCamera().combined);
+			pop_graph.drawGraph(sr);
+		}
 	}
 
 }
