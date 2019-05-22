@@ -139,6 +139,9 @@ public class MainUI extends Stage {
 
 		ui_table.add(pop_graph).fill().expand().row();
 		ui_table.add(stop);
+		
+		for (int x = -5; x <= 5; x++)
+			pop_graph.addPoint(x, x*x);
 	}
 	
 	private void updateMap() {
@@ -187,7 +190,7 @@ public class MainUI extends Stage {
 	public void act() {
 		super.act();
 		fps.setText("FPS: "+Gdx.graphics.getFramesPerSecond());
-		if (is_in_simulation) {
+		/*if (is_in_simulation) {
 			
 			float delay = 1;
 			
@@ -203,7 +206,7 @@ public class MainUI extends Stage {
 				    }
 				}, delay);
 			}
-		}
+		}*/
 	}
 	
 	public void draw() {
