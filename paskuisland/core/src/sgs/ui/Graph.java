@@ -54,9 +54,9 @@ public class Graph extends Table {
 				max_y = point.y;
 		}
 		
-		MIN_POINT.set(0, 0);
-		MAX_POINT.set(1, 1);
-		
+		MIN_POINT.set(points.first().x, min_y);
+		MAX_POINT.set(points.get(points.size-1).x, max_y);
+
 		screen_points.clear();
 		for (Vector2 point : points) {
 			screen_points.add(graphToScreenCoordinates(point));
@@ -78,11 +78,11 @@ public class Graph extends Table {
 		sr.begin(ShapeType.Line);
 		sr.line(origin,Y);
 		sr.line(origin, X);
-		if (verts.length >= 2)
+		if (verts.length >= 4)
 			sr.polyline(verts);
 		sr.end();
 		
-		//Gdx.app.log("GRAPH", "origin :"+origin+" X: "+X);
+		Gdx.app.log("GRAPH", "origin :"+origin+" X: "+X);
 	}
 	
 	public void addAllPoints(Array<Vector2> npoints) 
@@ -93,8 +93,13 @@ public class Graph extends Table {
 	
 	public void addPoint(Vector2 point) 
 	{
+		
+		
 		this.points.add(point);
 		updateGraph();
+		for (Vector2 p : points) {
+			System.out.println(p);
+		}
 	}
 	
 	public void setPoints(Array<Vector2> cpoints) 
@@ -112,7 +117,7 @@ public class Graph extends Table {
 	private Vector2 graphToScreenCoordinates(Vector2 point) {
 		Vector2 screen_point = new Vector2(
 				(point.x - MIN_POINT.x) / MAX_POINT.x, 
-				(-point.y - MIN_POINT.y) / MAX_POINT.y);
+				(-point.y + MIN_POINT.y) / MAX_POINT.y);
 		
 		screen_point.scl(getWidth(), getHeight());
 		return localToScreenCoordinates(screen_point);
