@@ -26,7 +26,7 @@ public class Pasquisland extends ApplicationAdapter {
 	
 	OrthographicCamera camera;
 	CameraMover cam_mov;
-	FillViewport vp;
+	FitViewport vp;
 	
 	MainUI ui;
 	Skin skin;
@@ -50,11 +50,13 @@ public class Pasquisland extends ApplicationAdapter {
 		
 		camera = new OrthographicCamera();
 		cam_mov = new CameraMover(camera, map_width, map_height);
-		vp = new FillViewport(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight(), camera);
+		camera.position.set(mappone.getMap().getWidth() / 2 *mappone.getMap().tile_size,
+							mappone.getMap().getHeight() / 2 *mappone.getMap().tile_size,0);
+		camera.zoom = cam_mov.MIN_ZOOM;
+		vp = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 		
 		skin = new Skin(Gdx.files.internal("skins/metal/metal-ui.json"));
 		ui = new MainUI(skin, new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), new SpriteBatch());
-		ui.draw(); // QUESTO RISOLVE IL BUG DEL RESIZE
 		
 		batch = new SpriteBatch();
 		rend = new ShapeRenderer();
@@ -71,15 +73,12 @@ public class Pasquisland extends ApplicationAdapter {
 		Gdx.gl.glClearColor(.8f, .8f, .8f, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		//Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight());
-		vp.apply();
 		cam_mov.update();
 		batch.setProjectionMatrix(camera.combined);
 		rend.setProjectionMatrix(camera.combined);
 		mappone.disegnaTutto(batch, rend, cam_mov.computeMapSight());
 		camera.update();
-		
-		ui.getViewport().apply();
+
 		ui.act();
 		ui.draw();
 	}
@@ -89,7 +88,7 @@ public class Pasquisland extends ApplicationAdapter {
 		ui.getViewport().update(width, height);
 		ui.getViewport().getCamera().update();
 		
-		ui.setGameScreenViewport(vp);
+		vp.update(width, height);
 		camera.update();
 		
 	}
