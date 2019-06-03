@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import sgs.entities.Cespuglio;
 import sgs.entities.Entity;
 import sgs.entities.Omino;
 import sgs.entities.posRandom;
@@ -117,6 +118,21 @@ public class Mappone {
 		}
 	}
 	
+	public void spammaCespugli(float densita){
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		for(int y=0; y<map.getHeight(); y++) {
+			for(int x=0; x< map.getWidth(); x++) {
+				if(map.getTerrainTypeAt(x, y)==map.land_id) {
+					if(r.nextFloat()<densita) {
+						Cespuglio cespuglio= new Cespuglio(x*map.tile_size,y*map.tile_size);
+						da_aggiornare.add(cespuglio);
+						chiCeStaQua(x,y).add(cespuglio);
+						}
+				}
+			}
+		}
+	}
+	
 	public void ammazzaOmini() {
 		for(int y=0; y<map.getHeight(); y++) {
 			for(int x=0; x< map.getWidth(); x++) {
@@ -171,6 +187,8 @@ public class Mappone {
 		RaggioVisivo.add(newpos);
 		return RaggioVisivo;
 	}
+	
+	
 	
 	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
 		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
