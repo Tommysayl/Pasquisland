@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -151,7 +152,12 @@ public class CameraMover extends InputAdapter{
 		clicked = false;
 		Vector3 wp = camera.unproject(new Vector3(screenX, screenY, 0));
 		end_mouse_pos.set(wp.x, wp.y);
-		//((Pasquisland)Gdx.app.getApplicationListener()).mappone.ved
+		Rectangle vediRect = new Rectangle();
+		vediRect.setPosition(Math.min(start_mouse_pos.x,  end_mouse_pos.x), 
+					 Math.min(start_mouse_pos.y,  end_mouse_pos.y));
+		vediRect.setSize(Math.abs(start_mouse_pos.x - end_mouse_pos.x), 
+						 Math.abs(start_mouse_pos.y - end_mouse_pos.y));
+		((Pasquisland)Gdx.app.getApplicationListener()).mappone.vediRect(vediRect);
 		return true;
 	}
 	

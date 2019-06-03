@@ -108,6 +108,7 @@ public class Graph extends Table {
 			sr.polyline(verts);
 		}
 		sr.end();
+		
 	}
 	
 	public void addAllPoints(Array<Vector2> npoints) 

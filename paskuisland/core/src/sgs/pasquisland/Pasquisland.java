@@ -66,6 +66,8 @@ public class Pasquisland extends ApplicationAdapter {
 		multi_input.addProcessor(ui);
 		multi_input.addProcessor(cam_mov);
 		Gdx.input.setInputProcessor(multi_input);
+		
+		startSimulation();
 	}
 
 	@Override
@@ -108,5 +110,9 @@ public class Pasquisland extends ApplicationAdapter {
 	
 	public void startSimulation() {
 		mappone.spammaOmini(.2f);
+	}
+	
+	public void stopSimulation() {
+		mappone.ammazzaOmini();
 	}
 }
