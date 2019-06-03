@@ -13,9 +13,7 @@ public class Omino extends Entity {
 	public static Texture texture = new Texture(Gdx.files.internal("spy.png"));
 
 	public Omino(float x, float y) {
-		super();
-		super.position = new Vector2(x,y);
-		super.gridposition = new GridPoint2((int) x/WorldMap.tile_size, (int)  y/WorldMap.tile_size);
+		super(x, y);
 	}
 	
 	public void disegnami(SpriteBatch batch) {

@@ -191,9 +191,7 @@ public class MainUI extends Stage {
 		super.act();
 		fps.setText("FPS: "+Gdx.graphics.getFramesPerSecond());
 		/*if (is_in_simulation) {
-			
 			float delay = 1;
-			
 			if (timer.isEmpty()) 
 			{
 				timer.scheduleTask(new Task()
