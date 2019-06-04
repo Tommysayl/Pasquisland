@@ -10,6 +10,8 @@ import sgs.map.WorldMap;
 
 public class Omino extends Entity {
 	
+	public static final int RAGGIO_VISIVO = 2;
+	
 	public static Texture texture = new Texture(Gdx.files.internal("spy.png"));
 
 	public Omino(float x, float y) {

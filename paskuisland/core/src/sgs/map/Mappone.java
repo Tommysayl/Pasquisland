@@ -67,7 +67,7 @@ public class Mappone {
 		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
-			for (Entity e :vedi((Omino) entita)) {
+			for (Entity e :vedi((Omino) entita, Omino.RAGGIO_VISIVO)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)	
 			}
 		}
