@@ -155,8 +155,7 @@ public class Mappone {
 
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
-	public Array<Entity> vedi(Entity omino, boolean add_pos){
-		int raggio = 2;
+	public Array<Entity> vedi(Entity omino,int raggio, boolean add_pos){
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
 			if(y<= map.getHeight() && y>=0) {
@@ -199,8 +198,8 @@ public class Mappone {
 		return RaggioVisivo;
 		
 	}
-	public Array<Entity> vedi(Entity omino){
-		return vedi(omino, true);
+	public Array<Entity> vedi(Entity omino, int raggio){
+		return vedi(omino,raggio, true);
 	}
 	
 	
@@ -259,8 +258,7 @@ public class Mappone {
 				for(int x= posizione.x-1; x<=posizione.x+1; x++) {
 					if(x< map.getWidth() && x>=0)
 						if(map.getTerrainTypeAt(x, y)== map.land_id) {
-						if(!presente(x,y,Palma.class)) {
-					
+							if(!presente(x,y,Palma.class)) {
 								Palma palmetta= new Palma(x*map.tile_size,y*map.tile_size);
 								da_aggiornare.add(palmetta);
 								chiCeStaQua(x, y).add(palmetta);
