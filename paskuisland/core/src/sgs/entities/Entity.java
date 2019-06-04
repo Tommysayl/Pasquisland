@@ -13,6 +13,8 @@ public abstract class Entity {
 	
 	public Vector2 position;
 	public GridPoint2 gridposition;
+	public float isAlive;
+	
 	
 	
 	public Entity(Vector2 pos) {
@@ -28,7 +30,8 @@ public abstract class Entity {
 	}
 	
 	public void update(float delta) {
-		
+			
 	}
+
 
 }

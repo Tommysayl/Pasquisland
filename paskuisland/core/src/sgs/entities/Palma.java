@@ -29,6 +29,7 @@ public class Palma extends Entity{
 		reproduction_interval = r.nextFloat()*(MAX_REPRODUCTION_TIME - MIN_REPRODUCTION_TIME)
 				+ MIN_REPRODUCTION_TIME;
 		my_time = 0;
+		this.isAlive = 1;
 	}
 	public void disegnami(SpriteBatch batch) {
 		batch.draw(texture, position.x, position.y, 32, 32);

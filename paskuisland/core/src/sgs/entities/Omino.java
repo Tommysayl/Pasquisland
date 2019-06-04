@@ -71,7 +71,7 @@ public class Omino extends Entity {
 	//metodo che prende in input un array con tutte le entità vicine all'omino e decide cosa fare => non returna niente
 	public void cheDevoFa() { 
 		
-		float [] Score; //lista di score 
+		float [] Score = null; //lista di score 
 		Array<Entity> Dintorni = Mappone.getInstance().vedi(this); //ritorna la lista per CheDevoFa di tipi generici importando la funzione vedi da mappone
 		for (int i = 0; i < Dintorni.size; i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
 			if (Dintorni.get(i) instanceof Palma)  
@@ -101,7 +101,9 @@ public class Omino extends Entity {
 		}
 	
 	
-    public void cheStamoAFa {
+    public void cheStamoAFa() {
+    	
+    	
     	
     	
     }
