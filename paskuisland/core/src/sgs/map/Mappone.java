@@ -255,16 +255,18 @@ public class Mappone {
 	}
 	public void spawnaPalmaQuaVicino(GridPoint2 posizione) {
 		for(int y= posizione.y-1; y<=posizione.y+1; y++) {
-			if(y<= map.getHeight() && y>=0)
+			if(y< map.getHeight() && y>=0)
 				for(int x= posizione.x-1; x<=posizione.x+1; x++) {
-					if(x<= map.getWidth() && x>=0)
+					if(x< map.getWidth() && x>=0)
+						if(map.getTerrainTypeAt(x, y)== map.land_id) {
 						if(!presente(x,y,Palma.class)) {
-							Palma palmetta= new Palma(x*map.tile_size,y*map.tile_size);
-							da_aggiornare.add(palmetta);
-							chiCeStaQua(x, y).add(palmetta);
-							return;
-		}}
-	}
+					
+								Palma palmetta= new Palma(x*map.tile_size,y*map.tile_size);
+								da_aggiornare.add(palmetta);
+								chiCeStaQua(x, y).add(palmetta);
+								return;
+			}		}		}	
+		}
 	}
 	
 	private <T extends Entity> boolean presente(int x,int y, Class<T> cls){
