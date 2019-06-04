@@ -26,6 +26,7 @@ public class Pasquisland extends ApplicationAdapter {
 	
 	OrthographicCamera camera;
 	CameraMover cam_mov;
+	EntitySelector selector;
 	FitViewport vp;
 	
 	MainUI ui;
@@ -55,19 +56,21 @@ public class Pasquisland extends ApplicationAdapter {
 		camera.zoom = cam_mov.MIN_ZOOM;
 		vp = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 		
+		selector = new EntitySelector();
+		
 		skin = new Skin(Gdx.files.internal("skins/metal/metal-ui.json"));
 		ui = new MainUI(skin, new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()), new SpriteBatch());
 		
 		batch = new SpriteBatch();
 		rend = new ShapeRenderer();
-	
 		
 		multi_input = new InputMultiplexer();
 		multi_input.addProcessor(ui);
+		multi_input.addProcessor(selector);
 		multi_input.addProcessor(cam_mov);
 		Gdx.input.setInputProcessor(multi_input);
 		
-		startSimulation();
+		startSimulation();		
 	}
 
 	@Override
@@ -79,6 +82,8 @@ public class Pasquisland extends ApplicationAdapter {
 		batch.setProjectionMatrix(camera.combined);
 		rend.setProjectionMatrix(camera.combined);
 		mappone.disegnaTutto(batch, rend, cam_mov.computeMapSight());
+		selector.transformCoord(camera);
+		selector.render(rend);
 		camera.update();
 
 		ui.act();

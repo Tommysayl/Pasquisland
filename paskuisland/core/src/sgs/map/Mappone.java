@@ -27,6 +27,8 @@ import sgs.pasquisland.Pasquisland;
  */
 public class Mappone {
 	
+	private static Mappone singleton;
+	
 	private WorldMap map; // mappa con le grafiche e ti dice se Ã¨ acqua o terra il terreno
 	
 	private HashMap<GridPoint2, Array<Entity>> mappa_entita; // mappa 2d delle entita
@@ -39,6 +41,8 @@ public class Mappone {
 	private int selected = 0;
 
 	public Mappone(int map_width, int map_height) {
+		if (singleton == null) singleton = this;
+		
 		float[] terrain_values = new float[3];
 		terrain_values[0] = .2f;
 		terrain_values[1] = .3f;
@@ -63,14 +67,16 @@ public class Mappone {
 			sr.begin(ShapeType.Filled);
 			sr.setColor(Color.RED);
 			for (Entity e :vedi((Omino) entita)) {
-				sr.rect(e.position.x, e.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)	
+				sr.rect(e.position.x, e.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)	
 			}
 			sr.setColor(Color.CHARTREUSE);
-			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)
+			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)
 			sr.end();
 		}
 		batch.begin();
+		batch.enableBlending();
 		disegnaEntita(batch);
+		batch.disableBlending();
 		batch.end();
 	}
 	
@@ -179,7 +185,7 @@ public class Mappone {
 			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(x,y).add(bimbo); 
-			/*Mancano i valori di forza socievolezza e velocità
+			/*Mancano i valori di forza socievolezza e velocitï¿½
 			 * non sappiamo se il controllo nell'acqua sia utile o no
 			 */
 		}
@@ -198,49 +204,32 @@ public class Mappone {
 	}
 	
 	public void vediRect(Rectangle rettangolo) {
+		nellaGriglia.clear();
 		int xgs= (int) (rettangolo.x/map.tile_size);//vertice basso sx griglia
 		int ygs= (int) (rettangolo.y/map.tile_size);//vertice basso sx griglia
-		float yd= rettangolo.y- rettangolo.height;// vertice alto dx pixel
+		float yd= rettangolo.y+ rettangolo.height;// vertice alto dx pixel
 		float xd= rettangolo.x+rettangolo.width;//vertice alto dx pixel
 		int ygd= (int) (yd/map.tile_size);//vertice alto dx griglia
 		int xgd= (int) (xd/map.tile_size);//vertice alto dx griglia
-		for(int y=ygd; y<= ygs; y++) {
+		for(int y=Math.min(ygs, ygd); y<= Math.max(ygs,ygd); y++) {
 			if(rettangolo.y<=map.getHeight()*map.tile_size && y>=0) {
-			for(int x= xgs; x<=xgd; x++) {
-				if(rettangolo.x<=map.getWidth()*map.tile_size && x>=0) {
-				for( Entity entita: chiCeStaQua(x,y)) {
-					if(entita instanceof Omino) {
-						nellaGriglia.add(entita);
+				for(int x= Math.min(xgs, xgd); x<=Math.max(xgs, xgd); x++) {
+					if(rettangolo.x<=map.getWidth()*map.tile_size && x>=0) {
+					for( Entity entita: chiCeStaQua(x,y)) {
+						if(entita instanceof Omino) {
+							nellaGriglia.add(entita);
+							}
 						}
+						
 					}
-				}
-			}	
-		}
+				}	
+			}
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	public static Mappone getInstance() {
+		return singleton;
+	}
 	
 }
 
