@@ -60,16 +60,18 @@ public class Mappone {
 	
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
 		disegnaMappetta(sr, che_se_vede);
+		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
-			sr.begin(ShapeType.Filled);
 			sr.setColor(Color.RED);
 			for (Entity e :vedi((Omino) entita)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)	
 			}
+		}
+		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.CHARTREUSE);
 			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)
-			sr.end();
 		}
+		sr.end();
 		batch.begin();
 		disegnaEntita(batch);
 		batch.end();
@@ -148,7 +150,7 @@ public class Mappone {
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
 	public Array<Entity> vedi(Omino omino){
-		int raggio = 6;
+		int raggio = 3;
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
 			if(y<= map.getHeight() && y>=0) {
@@ -216,6 +218,7 @@ public class Mappone {
 	}
 	
 	public void vediRect(Rectangle rettangolo) {
+		nellaGriglia.clear();
 		int xgs= (int) (rettangolo.x/map.tile_size);//vertice basso sx griglia
 		int ygs= (int) (rettangolo.y/map.tile_size);//vertice basso sx griglia
 		float yd= rettangolo.y- rettangolo.height;// vertice alto dx pixel
