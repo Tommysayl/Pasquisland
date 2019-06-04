@@ -10,11 +10,13 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 import sgs.entities.Entity;
 import sgs.entities.Omino;
+import sgs.entities.Palma;
 import sgs.entities.posRandom;
 import sgs.pasquisland.Pasquisland;
 
@@ -35,7 +37,8 @@ public class Mappone {
 	private Array<Entity> da_aggiornare;
 	private Array<Entity> crepate;
 	private Array<Entity> girini;
-	
+	private Array<Entity> nellaGriglia;
+
 	private int selected = 0;
 
 	public Mappone(int map_width, int map_height) {
@@ -49,33 +52,35 @@ public class Mappone {
 				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true, .1f);
 		
 		mappa_entita = new HashMap<GridPoint2, Array<Entity>>();
-		
+		nellaGriglia= new Array<Entity>();
 		da_aggiornare = new Array<Entity>();
 		crepate = new Array<Entity>();
 		girini = new Array<Entity>();
 	}
 	
 	public void aggiorna(float delta) {
-
+		for (Entity e : da_aggiornare)
+			e.update(delta);
 	}
 	
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
 		disegnaMappetta(sr, che_se_vede);
-		if (Gdx.input.isKeyPressed(Keys.SPACE))
-			selected++;
-		if (da_aggiornare.size > selected) {
-			Entity caso = da_aggiornare.get(selected);
-			sr.begin(ShapeType.Filled);
+		sr.begin(ShapeType.Filled);
+		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
-			for (Entity e :vedi((Omino) caso)) {
-				sr.rect(e.position.x, e.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)	
+			for (Entity e :vedi((Omino) entita)) {
+				sr.rect(e.position.x, e.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)	
 			}
-			sr.setColor(Color.CHARTREUSE);
-			sr.rect(caso.position.x, caso.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)
-			sr.end();
 		}
+		for (Entity entita : nellaGriglia) {
+			sr.setColor(Color.CHARTREUSE);
+			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)
+		}
+		sr.end();
 		batch.begin();
+		batch.enableBlending();
 		disegnaEntita(batch);
+		batch.disableBlending();
 		batch.end();
 	}
 	
@@ -123,6 +128,21 @@ public class Mappone {
 		}
 	}
 	
+	public void spammaPalme(float densita){
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		for(int y=0; y<map.getHeight(); y++) {
+			for(int x=0; x< map.getWidth(); x++) {
+				if(map.getTerrainTypeAt(x, y)==map.land_id) {
+					if(r.nextFloat()<densita) {
+						Palma cespuglio= new Palma(x*map.tile_size,y*map.tile_size);
+						da_aggiornare.add(cespuglio);
+						chiCeStaQua(x,y).add(cespuglio);
+						}
+				}
+			}
+		}
+	}
+	
 	public void ammazzaOmini() {
 		for(int y=0; y<map.getHeight(); y++) {
 			for(int x=0; x< map.getWidth(); x++) {
@@ -138,7 +158,7 @@ public class Mappone {
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
 	public Array<Entity> vedi(Omino omino){
-		int raggio = 5;
+		int raggio = 2;
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
 			if(y<= map.getHeight() && y>=0) {
@@ -161,9 +181,8 @@ public class Mappone {
 
 			}
 		}
-		posRandom newpos = new posRandom();
+		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
 		newpos.gridposition= omino.gridposition.cpy(); 
-		newpos.position= omino.position.cpy();
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		int r1= r.nextInt(3)-1;
 		int r2= r.nextInt(3)-1;
@@ -179,9 +198,67 @@ public class Mappone {
 		return RaggioVisivo;
 	}
 	
+<<<<<<< HEAD
 	public static Mappone getInstance() {
 		return  singleton;
 	}
+=======
+	
+	
+	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
+		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
+		int y= (genitore1.gridposition.y + genitore2.gridposition.y)/2;
+		if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
+			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+			da_aggiornare.add(bimbo);
+			chiCeStaQua(x,y).add(bimbo); 
+			/*Mancano i valori di forza socievolezza e velocitï¿½
+			 * non sappiamo se il controllo nell'acqua sia utile o no
+			 */
+		}
+		else {
+			Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+			while(map.getTerrainTypeAt(x, y) != WorldMap.water_id) {
+				int r1= r.nextInt(3)-1;
+				int r2= r.nextInt(3)-1;
+				x+=r1;
+				y+=r2;
+			}
+			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+			da_aggiornare.add(bimbo);
+			chiCeStaQua(x, y).add(bimbo);
+		}
+	}
+	
+	public void vediRect(Rectangle rettangolo) {
+		nellaGriglia.clear();
+		int xgs= (int) (rettangolo.x/map.tile_size);//vertice basso sx griglia
+		int ygs= (int) (rettangolo.y/map.tile_size);//vertice basso sx griglia
+		float yd= rettangolo.y+ rettangolo.height;// vertice alto dx pixel
+		float xd= rettangolo.x+rettangolo.width;//vertice alto dx pixel
+		int ygd= (int) (yd/map.tile_size);//vertice alto dx griglia
+		int xgd= (int) (xd/map.tile_size);//vertice alto dx griglia
+		for(int y=Math.min(ygs, ygd); y<= Math.max(ygs,ygd); y++) {
+			if(rettangolo.y<=map.getHeight()*map.tile_size && y>=0) {
+				for(int x= Math.min(xgs, xgd); x<=Math.max(xgs, xgd); x++) {
+					if(rettangolo.x<=map.getWidth()*map.tile_size && x>=0) {
+					for( Entity entita: chiCeStaQua(x,y)) {
+						if(entita instanceof Omino) {
+							nellaGriglia.add(entita);
+							}
+						}
+						
+					}
+				}	
+			}
+		}
+	}
+	
+	public static Mappone getInstance() {
+		return singleton;
+	}
+	
+>>>>>>> branch 'master' of https://github.com/Frisayl/Pasquisland.git
 }
 
 

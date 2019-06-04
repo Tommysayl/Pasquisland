@@ -2,14 +2,12 @@ package sgs.entities;
 
 
 import java.util.Random;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-
 import sgs.map.Mappone;
 
 public class Omino extends Entity {
@@ -20,10 +18,12 @@ public class Omino extends Entity {
 	  public float speed;
 	  public float hunger; 
 	  public float sociality;
-	  public char[] tribu;
+      public Entity Obiettivo;
+      public String tribu;
+      
       
 	  public Omino(float x, float y, float strength, float speed, float hunger, float sociality, char tribu[]) {
-		super();
+		super(x,y);
 		super.position = new Vector2(x,y);   //assegno dei valori random alle caratteristiche
 		float S = new Random().nextFloat();
 		this.strength = S;
@@ -33,6 +33,7 @@ public class Omino extends Entity {
 		this.speed = 2*So;
 		tribu = dammiTribu();
 		this.hunger = 0; 
+		this.isAlive = 1;
 		
 		}
 	
@@ -72,34 +73,32 @@ public class Omino extends Entity {
 		
 		float [] Score; //lista di score 
 		Array<Entity> Dintorni = Mappone.getInstance().vedi(this); //ritorna la lista per CheDevoFa di tipi generici importando la funzione vedi da mappone
-		for (int i = 0; i < Dintorni.length(); i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
-			if Dintorni.get(i) instanceof Palma  
+		for (int i = 0; i < Dintorni.size; i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
+			if (Dintorni.get(i) instanceof Palma)  
 				Score[i] = (this.hunger * this.hunger) / (this.position.dst2(Dintorni.get(i).position));
-			else if Dintorni.get(i) instanceof Omino 
-				if this.tribu == Dintorni.get(i).tribu
+			else if (Dintorni.get(i) instanceof Omino) {
+				if (this.tribu == ((Omino) Dintorni.get(i)).tribu) 
 			       Score[i] = (this.sociality * this.sociality) / (this.position.dst2(Dintorni.get(i).position));
-			    else if  this.tribu != Dintorni.get(i).tribu	//perche altrimenti selezionerei anche le posizioni vuote
+			    else if  (this.tribu != ((Omino)Dintorni.get(i)).tribu)	//perche altrimenti selezionerei anche le posizioni vuote
 			    		Score[i] = (this.strength * this.hunger) / (this.position.dst2(Dintorni.get(i).position));
+			}
 		}
-		int max = 0;
+		float max = 0;
 		int j = 0;
-	    for (i = 0; i < Score.length;i++) {
-		    if (score[i] > max ) {
-		    	max = score[i];
+	    for (int i = 0; i < Score.length;i++) {
+		    if (Score[i] > max ) {
+		    	max = Score[i];
 		    	j = i; //j è l'indice del massimo
 		    }  
 	    }
-		move(Dintorni.get(j));   
+		Obiettivo = Dintorni.get(j);   
 	}
-	public void  move {
-		
-		
-		
-		
-		
-		
-		
-	}
+	public void move(Entity Obiettivo) {
+		    Vector2 direction = Obiettivo.position.cpy().sub(this.position);
+	        direction = direction.nor();
+	        position.x += direction.x;
+	        position.y += direction.y;
+		}
 	
 	
     public void cheStamoAFa {
@@ -109,6 +108,4 @@ public class Omino extends Entity {
     
 
 }
- 
 
- 

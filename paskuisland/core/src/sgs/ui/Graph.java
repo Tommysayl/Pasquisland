@@ -1,6 +1,8 @@
 package sgs.ui;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
@@ -16,7 +18,8 @@ import com.kotcrab.vis.ui.building.utilities.Alignment;
 
 public class Graph extends Table {
 	
-	private Vector2 MIN_POINT, MAX_POINT;
+	private Vector2 MIN_POINT, MAX_POINT, origin, X, Y;
+	private Vector2[] x_lines, y_lines;
 	private Array<Vector2> points;
 	private Array<Vector2> screen_points;
 	private float[] verts;
@@ -27,9 +30,15 @@ public class Graph extends Table {
 	private VerticalGroup y_label_group;
 	private HorizontalGroup x_label_group;
 	
+	private Color graph_bg_col;
+	private Color graph_line_col;
+	
+	private ShapeRenderer sr;
 	
 	public Graph(Skin skin, String y_axis, String x_axis) {
 		super(skin);
+		
+		sr = new ShapeRenderer();
 		
 		graph = new Label("", skin);
 		
@@ -62,22 +71,38 @@ public class Graph extends Table {
 		points = new Array<Vector2>();
 		screen_points = new Array<Vector2>();
 		
+		graph_bg_col = Color.WHITE;
+		graph_line_col = Color.LIGHT_GRAY;
+		
+		x_lines = y_lines = new Vector2[0];
+		
+		updateGraph();
 	}
 		
-	public void drawGraph(ShapeRenderer sr) {
+	public void draw(Batch batch, float palpha) {
+		sr.setProjectionMatrix(getStage().getCamera().combined);
 		drawGraphLines(sr);
 	}
 	
 	
-	private void drawGraphLines(ShapeRenderer sr) {
-		Vector2 origin = this.graphToScreenCoordinates(MIN_POINT);
-		Vector2 Y = graphToScreenCoordinates(new Vector2(MIN_POINT.x, MAX_POINT.y));
-		Vector2 X = graphToScreenCoordinates(new Vector2(MAX_POINT.x, MIN_POINT.y));
-				
+	private void drawGraphLines(ShapeRenderer sr) {	
+		sr.begin(ShapeType.Filled);
+		sr.setColor(graph_bg_col);
+		sr.rect(origin.x, origin.y, X.x-origin.x, Y.y-origin.y);
+		sr.end();
 		sr.begin(ShapeType.Line);
-		sr.setColor(Color.WHITE);
+		sr.setColor(Color.BLACK);
 		sr.line(origin,Y);
 		sr.line(origin, X);
+		//GRAPH LINES
+		sr.setColor(graph_line_col);	
+		for (int i = 0; i < x_lines.length; i+=2) {
+			sr.line(x_lines[i], x_lines[i+1]);
+		}
+		for (int i = 0; i < y_lines.length; i+=2) {
+			sr.line(y_lines[i], y_lines[i+1]);
+		}
+		
 		if (verts.length >= 4) {
 			sr.setColor(Color.RED);
 			sr.polyline(verts);
@@ -124,13 +149,18 @@ public class Graph extends Table {
 			if (point.y > max_y)
 				max_y = point.y;
 		}
+		if (points.isEmpty()) {
+			MIN_POINT.set(0, 0);
+			MAX_POINT.set(1, 1);
+		}
+		else {
+			MIN_POINT.set(points.first().x, min_y);
+			MAX_POINT.set(points.get(points.size-1).x, max_y);
+		}
 		
-		MIN_POINT.set(points.first().x, min_y);
-		MAX_POINT.set(points.get(points.size-1).x, max_y);
-
 		screen_points.clear();
 		for (Vector2 point : points) {
-			screen_points.add(graphToScreenCoordinates(point));
+			screen_points.add(graphToStageCoordinates(point));
 		}
 		
 		// SETTING LABELS NAMES
@@ -162,9 +192,30 @@ public class Graph extends Table {
 			verts[i+1] = point.y;
 			i += 2;
 		}
+		
+		//SETTING graph lines
+		x_lines = new Vector2[2*x_label_count];
+		y_lines = new Vector2[2*y_label_count];
+		
+		i = 0;
+		for (; i < 2*x_label_count; i += 2){
+			x_lines[i] = graphToStageCoordinates(new Vector2(x_labels_pos[i/2], MIN_POINT.y));
+			x_lines[i+1] = graphToStageCoordinates(new Vector2(x_labels_pos[i/2], MAX_POINT.y));
+		}
+		
+		i = 0;
+		for (; i < 2*y_label_count; i += 2){
+			y_lines[i] = graphToStageCoordinates(new Vector2(MIN_POINT.x, y_labels_pos[i/2]));
+			y_lines[i+1] = graphToStageCoordinates(new Vector2(MAX_POINT.x,  y_labels_pos[i/2]));
+		}
+		
+		//SETTING graph origin lines
+		origin = graphToStageCoordinates(MIN_POINT);
+		Y = graphToStageCoordinates(new Vector2(MIN_POINT.x, MAX_POINT.y));
+		X = graphToStageCoordinates(new Vector2(MAX_POINT.x, MIN_POINT.y));
 	}
 	
-	private Vector2 graphToScreenCoordinates(Vector2 point) {
+	private Vector2 graphToStageCoordinates(Vector2 point) {
 		Vector2 graph_actor_point = new Vector2(
 				(point.x - MIN_POINT.x) / (MAX_POINT.x - MIN_POINT.x), 
 				(point.y - MIN_POINT.y) / (MAX_POINT.y - MIN_POINT.y));
@@ -176,9 +227,13 @@ public class Graph extends Table {
 		return graph.localToStageCoordinates(graph_actor_point);
 	}
 	
-	public void layout() {
-		super.layout();
-		updateGraph();
+	public void setGraphBackgroundColor(Color bg) {
+		graph_bg_col = bg.cpy();
 	}
+	
+	public void setGraphLinesColor(Color l_col) {
+		graph_line_col = l_col.cpy();
+	}
+	
 
 }
