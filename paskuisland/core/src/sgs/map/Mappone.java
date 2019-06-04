@@ -14,6 +14,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import sgs.entities.Cespuglio;
 import sgs.entities.Entity;
 import sgs.entities.Omino;
 import sgs.entities.posRandom;
@@ -63,16 +64,18 @@ public class Mappone {
 	
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
 		disegnaMappetta(sr, che_se_vede);
+		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
-			sr.begin(ShapeType.Filled);
 			sr.setColor(Color.RED);
 			for (Entity e :vedi((Omino) entita)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)	
 			}
+		}
+		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.CHARTREUSE);
 			sr.rect(entita.position.x, entita.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)
-			sr.end();
 		}
+		sr.end();
 		batch.begin();
 		batch.enableBlending();
 		disegnaEntita(batch);
@@ -123,6 +126,21 @@ public class Mappone {
 		}
 	}
 	
+	public void spammaCespugli(float densita){
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		for(int y=0; y<map.getHeight(); y++) {
+			for(int x=0; x< map.getWidth(); x++) {
+				if(map.getTerrainTypeAt(x, y)==map.land_id) {
+					if(r.nextFloat()<densita) {
+						Cespuglio cespuglio= new Cespuglio(x*map.tile_size,y*map.tile_size);
+						da_aggiornare.add(cespuglio);
+						chiCeStaQua(x,y).add(cespuglio);
+						}
+				}
+			}
+		}
+	}
+	
 	public void ammazzaOmini() {
 		for(int y=0; y<map.getHeight(); y++) {
 			for(int x=0; x< map.getWidth(); x++) {
@@ -138,7 +156,7 @@ public class Mappone {
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
 	public Array<Entity> vedi(Omino omino){
-		int raggio = 6;
+		int raggio = 3;
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
 			if(y<= map.getHeight() && y>=0) {
@@ -177,6 +195,8 @@ public class Mappone {
 		RaggioVisivo.add(newpos);
 		return RaggioVisivo;
 	}
+	
+	
 	
 	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
 		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
