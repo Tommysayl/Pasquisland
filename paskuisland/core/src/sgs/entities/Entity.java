@@ -24,5 +24,9 @@ public abstract class Entity {
 	
 	public void disegnami(SpriteBatch batch) {
 	}
+	
+	public void update(float delta) {
+		
+	}
 
 }

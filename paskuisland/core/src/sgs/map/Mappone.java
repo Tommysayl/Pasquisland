@@ -59,7 +59,8 @@ public class Mappone {
 	}
 	
 	public void aggiorna(float delta) {
-
+		for (Entity e : da_aggiornare)
+			e.update(delta);
 	}
 	
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
