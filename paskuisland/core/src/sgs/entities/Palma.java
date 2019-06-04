@@ -29,7 +29,6 @@ public class Palma extends Entity{
 		reproduction_interval = r.nextFloat()*(MAX_REPRODUCTION_TIME - MIN_REPRODUCTION_TIME)
 				+ MIN_REPRODUCTION_TIME;
 		my_time = 0;
-		this.isAlive = 1;
 	}
 	public void disegnami(SpriteBatch batch) {
 		batch.draw(texture, position.x, position.y, 32, 32);
@@ -37,7 +36,7 @@ public class Palma extends Entity{
 	
 	public void update(float delta) {
 		if (my_time > reproduction_interval) {
-			Array<Entity> palms = Mappone.getInstance().vedi(this, false);
+			Array<Entity> palms = Mappone.getInstance().vedi(this, 1,false);
 			int num_palms = 0;
 			for (Entity e : palms) {
 				if (e instanceof Palma)

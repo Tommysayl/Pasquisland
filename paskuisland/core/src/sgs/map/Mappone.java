@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -68,7 +67,7 @@ public class Mappone {
 		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
-			for (Entity e :vedi((Omino) entita)) {
+			for (Entity e :vedi((Omino) entita, Omino.RAGGIO_VISIVO)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)	
 			}
 		}
@@ -157,8 +156,7 @@ public class Mappone {
 
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
-	public Array<Entity> vedi(Omino omino){
-		int raggio = 2;
+	public Array<Entity> vedi(Entity omino,int raggio, boolean add_pos){
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
 			if(y<= map.getHeight() && y>=0) {
@@ -181,6 +179,7 @@ public class Mappone {
 
 			}
 		}
+		if(add_pos==true) {
 		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
 		newpos.gridposition= omino.gridposition.cpy(); 
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
@@ -188,22 +187,25 @@ public class Mappone {
 		int r2= r.nextInt(3)-1;
 		if (omino.gridposition.x+r1<= map.getWidth() && omino.gridposition.x+r1>=0 && omino.gridposition.y+r2<=map.getHeight() && omino.gridposition.y+r2>=0) {
 			if(map.getTerrainTypeAt(omino.gridposition.x+r1, omino.gridposition.y+r2)!= WorldMap.water_id) {
-			newpos.gridposition.x= omino.gridposition.x+r1;
-			newpos.gridposition.y= omino.gridposition.y+r2;
-			newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
-			newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
+
+					newpos.gridposition.x= omino.gridposition.x+r1;
+					newpos.gridposition.y= omino.gridposition.y+r2;
+					newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
+					newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
 			}
 		}
 		RaggioVisivo.add(newpos);
+		}
 		return RaggioVisivo;
+		
+	}
+	public Array<Entity> vedi(Entity omino, int raggio){
+		return vedi(omino,raggio, true);
 	}
 	
-<<<<<<< HEAD
 	public static Mappone getInstance() {
 		return  singleton;
 	}
-=======
-	
 	
 	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
 		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
@@ -239,26 +241,40 @@ public class Mappone {
 		int ygd= (int) (yd/map.tile_size);//vertice alto dx griglia
 		int xgd= (int) (xd/map.tile_size);//vertice alto dx griglia
 		for(int y=Math.min(ygs, ygd); y<= Math.max(ygs,ygd); y++) {
-			if(rettangolo.y<=map.getHeight()*map.tile_size && y>=0) {
+			if(rettangolo.y<=map.getHeight()*map.tile_size && y>=0)
 				for(int x= Math.min(xgs, xgd); x<=Math.max(xgs, xgd); x++) {
-					if(rettangolo.x<=map.getWidth()*map.tile_size && x>=0) {
+					if(rettangolo.x<=map.getWidth()*map.tile_size && x>=0) 
 					for( Entity entita: chiCeStaQua(x,y)) {
 						if(entita instanceof Omino) {
 							nellaGriglia.add(entita);
 							}
 						}
-						
 					}
-				}	
-			}
+				}
+			}	
+	
+	public void spawnaPalmaQuaVicino(GridPoint2 posizione) {
+		for(int y= posizione.y-1; y<=posizione.y+1; y++) {
+			if(y< map.getHeight() && y>=0)
+				for(int x= posizione.x-1; x<=posizione.x+1; x++) {
+					if(x< map.getWidth() && x>=0)
+						if(map.getTerrainTypeAt(x, y)== map.land_id) {
+							if(!presente(x,y,Palma.class)) {
+								Palma palmetta= new Palma(x*map.tile_size,y*map.tile_size);
+								da_aggiornare.add(palmetta);
+								chiCeStaQua(x, y).add(palmetta);
+								return;
+			}		}		}	
 		}
 	}
 	
-	public static Mappone getInstance() {
-		return singleton;
+	private <T extends Entity> boolean presente(int x,int y, Class<T> cls){
+		for(Entity e: chiCeStaQua(x,y)) {
+			if(cls.isInstance(e)) 
+				return true;
+		}
+		return false;
 	}
-	
->>>>>>> branch 'master' of https://github.com/Frisayl/Pasquisland.git
 }
 
 

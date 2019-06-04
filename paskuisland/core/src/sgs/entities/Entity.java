@@ -9,15 +9,12 @@ import sgs.map.WorldMap;
 
 public abstract class Entity {
 	
-	
-	
 	public Vector2 position;
 	public GridPoint2 gridposition;
-	public float isAlive;
-	
-	
+	public float life;
 	
 	public Entity(Vector2 pos) {
+		life = 1;
 		position = pos;
 		gridposition= new GridPoint2((int)pos.x/WorldMap.tile_size, (int)pos.y/WorldMap.tile_size);
 	}

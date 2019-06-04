@@ -9,9 +9,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import sgs.map.Mappone;
+import sgs.pasquisland.Pasquisland;
 
 public class Omino extends Entity {
 	
+	public static final int RAGGIO_VISIVO = 2;
 	public static Texture texture = new Texture(Gdx.files.internal("spy.png"));
 	  
 	  public float strength; 
@@ -21,23 +23,18 @@ public class Omino extends Entity {
       public Entity Obiettivo;
       public String tribu;
       
-      
-	  public Omino(float x, float y, float strength, float speed, float hunger, float sociality, char tribu[]) {
+	  public Omino(float x, float y) {
 		super(x,y);
-		super.position = new Vector2(x,y);   //assegno dei valori random alle caratteristiche
-		float S = new Random().nextFloat();
-		this.strength = S;
-		float So = new Random().nextFloat();
-		this.sociality = So;
-		float Sp = new Random().nextFloat();
-		this.speed = 2*So;
+ 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		this.strength =  r.nextFloat();
+		this.sociality =  r.nextFloat();
+		this.speed =  r.nextInt(10)+16;
 		tribu = dammiTribu();
-		this.hunger = 0; 
-		this.isAlive = 1;
-		
+		this.hunger = 0; 		
 		}
 	
-	private char[] dammiTribu() {
+	private String dammiTribu() {
+		char[] tribu =new char[3];
 		
 		if (this.strength < 0.33f)    //assegno una tribu ad ogni omino
 			tribu[1] = 'a';
@@ -60,8 +57,7 @@ public class Omino extends Entity {
 		else if (this.speed > 0.32)
 			tribu[3] = 'c';
 		
-		
-		return tribu; 
+		return String.copyValueOf(tribu); 
 	}
 
 	public void disegnami(SpriteBatch batch) {
@@ -71,8 +67,8 @@ public class Omino extends Entity {
 	//metodo che prende in input un array con tutte le entità vicine all'omino e decide cosa fare => non returna niente
 	public void cheDevoFa() { 
 		
-		float [] Score = null; //lista di score 
-		Array<Entity> Dintorni = Mappone.getInstance().vedi(this); //ritorna la lista per CheDevoFa di tipi generici importando la funzione vedi da mappone
+		Array<Entity> Dintorni = Mappone.getInstance().vedi(this, Omino.RAGGIO_VISIVO); //ritorna la lista per CheDevoFa di tipi generici importando la funzione vedi da mappone
+		float [] Score = new float[Dintorni.size]; //lista di score 
 		for (int i = 0; i < Dintorni.size; i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
 			if (Dintorni.get(i) instanceof Palma)  
 				Score[i] = (this.hunger * this.hunger) / (this.position.dst2(Dintorni.get(i).position));
@@ -102,12 +98,6 @@ public class Omino extends Entity {
 	
 	
     public void cheStamoAFa() {
-    	
-    	
-    	
-    	
+
     }
-    
-
 }
-
