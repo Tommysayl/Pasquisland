@@ -44,7 +44,7 @@ public class Palma extends Entity{
 			}
 			
 			if (num_palms < MAX_PALME_PER_RIPRODURSI && num_palms > MIN_PALME_PER_RIPRODURSI)
-				Mappone.getInstance().spawnaPalma(gridposition);
+				Mappone.getInstance().spawnaPalmaQuaVicino(gridposition);
 			my_time = 0;
 		}
 		else {
