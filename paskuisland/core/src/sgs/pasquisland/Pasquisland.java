@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.FillViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import sgs.map.Mappone;
@@ -115,7 +116,7 @@ public class Pasquisland extends ApplicationAdapter {
 	}
 	
 	public void startSimulation() {
-		mappone.spammaOmini(.2f);
+		mappone.spammaOmini(.1f);
 		mappone.spammaPalme(.1f);
 	}
 	

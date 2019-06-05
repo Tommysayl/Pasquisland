@@ -58,8 +58,16 @@ public class Mappone {
 	}
 	
 	public void aggiorna(float delta) {
-		for (Entity e : da_aggiornare)
+		for (Entity e : da_aggiornare) {
 			e.update(delta);
+			if (e.life <= 0)
+				crepate.add(e);
+		}
+		
+		da_aggiornare.removeAll(crepate, true);
+		for (Entity e : crepate)
+			chiCeStaQua(e.gridposition).removeValue(e, true);
+		crepate.clear();
 	}
 	
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
@@ -159,9 +167,9 @@ public class Mappone {
 	public Array<Entity> vedi(Entity omino,int raggio, boolean add_pos){
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
-			if(y<= map.getHeight() && y>=0) {
+			if(y< map.getHeight() && y>=0) {
 				for( int x= omino.gridposition.x-raggio; x<=omino.gridposition.x+raggio; x++) {
-					if (x<= map.getWidth() && x>=0) {
+					if (x< map.getWidth() && x>=0) {
 						if( y==omino.gridposition.y && x== omino.gridposition.x) {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								if(entita != omino) {
@@ -169,7 +177,7 @@ public class Mappone {
 								}
 							}
 						}
-						if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
+						else if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								RaggioVisivo.add(entita);
 							}
@@ -275,6 +283,7 @@ public class Mappone {
 		}
 		return false;
 	}
+	
 }
 
 
