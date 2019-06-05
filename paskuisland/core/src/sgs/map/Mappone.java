@@ -68,7 +68,7 @@ public class Mappone {
 		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
-			for (Entity e :vedi((Omino) entita)) {
+			for (Entity e :vedi((Omino,2) entita)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)	
 			}
 		}
@@ -180,25 +180,33 @@ public class Mappone {
 			}
 		}
 		if(add_pos==true) {
-		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
-		newpos.gridposition= omino.gridposition.cpy(); 
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(3)-1;
-		int r2= r.nextInt(3)-1;
-		if (omino.gridposition.x+r1<= map.getWidth() && omino.gridposition.x+r1>=0 && omino.gridposition.y+r2<=map.getHeight() && omino.gridposition.y+r2>=0) {
-			if(map.getTerrainTypeAt(omino.gridposition.x+r1, omino.gridposition.y+r2)!= WorldMap.water_id) {
-
-					newpos.gridposition.x= omino.gridposition.x+r1;
-					newpos.gridposition.y= omino.gridposition.y+r2;
-					newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
-					newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
-			}
-		}
-		RaggioVisivo.add(newpos);
+		RaggioVisivo.add(posizioneIntorno(omino));
 		}
 		return RaggioVisivo;
 		
 	}
+	
+	public posRandom posizioneIntorno(Entity entita) {
+		posRandom newpos = new posRandom(entita.position.x, entita.position.y);
+		newpos.gridposition= entita.gridposition.cpy(); 
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(3)-1;
+		int r2= r.nextInt(3)-1;
+		if (entita.gridposition.x+r1<= map.getWidth() && entita.gridposition.x+r1>=0 && entita.gridposition.y+r2<=map.getHeight() && entita.gridposition.y+r2>=0) {
+			if(map.getTerrainTypeAt(entita.gridposition.x+r1, entita.gridposition.y+r2)!= WorldMap.water_id) {
+					newpos.gridposition.x= entita.gridposition.x+r1;
+					newpos.gridposition.y= entita.gridposition.y+r2;
+					newpos.position.x= entita.position.x+r1*WorldMap.tile_size;
+					newpos.position.y= entita.position.y+r2*WorldMap.tile_size;
+			}
+		}
+		return newpos;
+	}
+	
+	
+	
+	
+	
 	public Array<Entity> vedi(Entity omino, int raggio){
 		return vedi(omino,raggio, true);
 	}
