@@ -36,7 +36,7 @@ public class Palma extends Entity{
 	
 	public void update(float delta) {
 		if (my_time > reproduction_interval) {
-			Array<Entity> palms = Mappone.getInstance().vedi(this, false);
+			Array<Entity> palms = Mappone.getInstance().vedi(this,1, false);
 			int num_palms = 0;
 			for (Entity e : palms) {
 				if (e instanceof Palma)
