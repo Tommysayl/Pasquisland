@@ -36,7 +36,7 @@ public class Omino extends Entity {
  		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		this.strength =  r.nextFloat();
 		this.sociality =  r.nextFloat();
-		this.speed =  r.nextInt(32)+32;
+		this.speed =  r.nextInt(64)+32;
 		tribu = dammiTribu();
 		this.hunger = .1f; 	
 		life = 20;
@@ -62,11 +62,11 @@ public class Omino extends Entity {
 		else if (this.sociality > 0.66)
 			tribu[1] = 'c';
 		
-		if (this.speed <= 42) 
+		if (this.speed <= 53) 
 			tribu[2] = 'a';
-		else if (this.speed >42 && this.speed <= 53)
+		else if (this.speed >53 && this.speed <= 73)
 			tribu[2] = 'b';
-		else if (this.speed > 53)
+		else if (this.speed > 73)
 			tribu[2] = 'c';
 		
 		return String.copyValueOf(tribu); 
