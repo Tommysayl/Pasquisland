@@ -13,7 +13,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import sgs.entities.Drago;
 import sgs.entities.Entity;
 import sgs.entities.Omino;
 import sgs.entities.Palma;
@@ -76,7 +75,7 @@ public class Mappone {
 		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
-			for (Entity e :vedi(entita, Omino.RAGGIO_VISIVO)) {
+			for (Entity e :vedi((Omino) entita, Omino.RAGGIO_VISIVO)) {
 				sr.rect(e.position.x, e.position.y, 30, 30); //perch� ogni quadrato � 32x32 => per non avere rettangoli in caso di entit� vicine considero un'area minore :)	
 			}
 		}
@@ -91,7 +90,6 @@ public class Mappone {
 		batch.disableBlending();
 		batch.end();
 	}
-
 	
 	public void disegnaMappetta(ShapeRenderer sr, int[] che_se_vede) {
 		map.render(sr, che_se_vede[0], che_se_vede[1], che_se_vede[2], che_se_vede[3]);
@@ -190,47 +188,25 @@ public class Mappone {
 			}
 		}
 		if(add_pos==true) {
-		RaggioVisivo.add(DoVadoACaso(omino.gridposition));
+		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
+		newpos.gridposition= omino.gridposition.cpy(); 
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(3)-1;
+		int r2= r.nextInt(3)-1;
+		if (omino.gridposition.x+r1<= map.getWidth() && omino.gridposition.x+r1>=0 && omino.gridposition.y+r2<=map.getHeight() && omino.gridposition.y+r2>=0) {
+			if(map.getTerrainTypeAt(omino.gridposition.x+r1, omino.gridposition.y+r2)!= WorldMap.water_id) {
+
+					newpos.gridposition.x= omino.gridposition.x+r1;
+					newpos.gridposition.y= omino.gridposition.y+r2;
+					newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
+					newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
+			}
+		}
+		RaggioVisivo.add(newpos);
 		}
 		return RaggioVisivo;
 		
 	}
-	
-	public posRandom DoVadoACaso(GridPoint2 posizione) {
-		posRandom newpos = new posRandom(posizione.x*WorldMap.tile_size, posizione.y*WorldMap.tile_size);
-		newpos.gridposition= posizione.cpy(); 
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(5)-1;
-		int r2= r.nextInt(5)-1;
-		if (posizione.x+r1<= map.getWidth() && posizione.x+r1>=0 && posizione.y+r2<=map.getHeight() && posizione.y+r2>=0) {
-			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
-					newpos.gridposition.x= posizione.x+r1;
-					newpos.gridposition.y= posizione.y+r2;
-					newpos.position.x= (posizione.x+r1)*WorldMap.tile_size;
-					newpos.position.y= (posizione.y+r2)*WorldMap.tile_size;
-			}
-		}
-		return newpos;
-	}
-	
-	public posRandom DoMeRiproduco(GridPoint2 posizione) {
-		posRandom newpos = new posRandom(posizione.x*WorldMap.tile_size, posizione.y*WorldMap.tile_size);
-		newpos.gridposition= posizione.cpy(); 
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(3)-1;
-		int r2= r.nextInt(3)-1;
-		if (posizione.x+r1<= map.getWidth() && posizione.x+r1>=0 && posizione.y+r2<=map.getHeight() && posizione.y+r2>=0) {
-			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
-					newpos.gridposition.x= posizione.x+r1;
-					newpos.gridposition.y= posizione.y+r2;
-					newpos.position.x= (posizione.x+r1)*WorldMap.tile_size;
-					newpos.position.y= (posizione.y+r2)*WorldMap.tile_size;
-			}
-		}
-		return newpos;
-	}
-	
-	
 	public Array<Entity> vedi(Entity omino, int raggio){
 		return vedi(omino,raggio, true);
 	}
@@ -245,14 +221,32 @@ public class Mappone {
 		if(r1==0) {
 			posRandom posBimbo= DoMeRiproduco(genitore1.gridposition);
 			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
+		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
+		int y= (genitore1.gridposition.y + genitore2.gridposition.y)/2;
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+
+		if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
+			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(posBimbo.gridposition.x,posBimbo.gridposition.y).add(bimbo);
+			chiCeStaQua(x,y).add(bimbo); 
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
+
 		}
 		else if(r1==1) {
 			posRandom posBimbo= DoMeRiproduco(genitore2.gridposition);
 			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
+		else {
+			while(map.getTerrainTypeAt(x, y) != WorldMap.water_id) {
+				int r1= r.nextInt(3)-1;
+				int r2= r.nextInt(3)-1;
+				x+=r1;
+				y+=r2;
+			}
+			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
 			da_aggiornare.add(bimbo);
-			chiCeStaQua(posBimbo.gridposition.x,posBimbo.gridposition.y).add(bimbo);
+			chiCeStaQua(x, y).add(bimbo);
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
 		}
 	}
 	
