@@ -13,7 +13,7 @@ import sgs.pasquisland.Pasquisland;
 public class Palma extends Entity{
 	
 	private static int MIN_PALME_PER_RIPRODURSI = 0;
-	private static int MAX_PALME_PER_RIPRODURSI = 3;
+	private static int MAX_PALME_PER_RIPRODURSI = 10;
 	
 	private static float MIN_REPRODUCTION_TIME = .1f;
 	private static float MAX_REPRODUCTION_TIME = 1;

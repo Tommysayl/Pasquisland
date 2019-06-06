@@ -20,9 +20,15 @@ public class Omino extends Entity {
 	
 	public static final int RAGGIO_VISIVO = 4;
 	public static final float ACTION_DST = 20;
-	public static final float BLOCCO_INT = 2;
+	//public static final float BLOCCO_INT = 2;
 	public static final float PREGNANCY = .2f;
 	public static final float HUNGER_PER_SECOND = .2f; // la fame arriva a 1 in 5 sec
+	
+	/* BOUNDARIES FOR STATS */
+	public static final float MIN_STRENGTH = 0, MAX_STRENGTH = 1;
+	public static final float MIN_SOCIALITY = 0, MAX_SOCIALITY = 1;
+	public static final float MIN_SPEED = 32, MAX_SPEED = 96;
+	
 	public static Texture texture = new Texture(Gdx.files.internal("spy.png"));
 	  
 	  public float strength; 
@@ -39,7 +45,7 @@ public class Omino extends Entity {
 	  public Omino(float x, float y) {
 		super(x,y);
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		setValues(r.nextFloat(),r.nextFloat(),r.nextInt(64)+32);
+		setValues(r.nextFloat(),r.nextFloat(),r.nextInt((int) (MAX_SPEED - MIN_SPEED))+MIN_SPEED);
 		
 		this.hunger = 0f; 	
 		life = 20;
@@ -58,28 +64,21 @@ public class Omino extends Entity {
 	
 	private String dammiTribu() {
 		char[] tribu =new char[3];
-		
-		if (this.strength < 0.33f)    //assegno una tribu ad ogni omino
-			tribu[0] = 'a';
-		else if (this.strength > 0.33 && this.strength <= 0.66)
-			tribu[0] = 'b';
-		else if (this.strength > 0.66)
-			tribu[0] = 'c';
-		
-		if (this.sociality < 0.33f) 
-			tribu[1] = 'a';
-		else if (this.sociality > 0.33 && this.sociality <= 0.66)
-			tribu[1] = 'b';
-		else if (this.sociality > 0.66)
-			tribu[1] = 'c';
-		
-		if (this.speed <= 53) 
-			tribu[2] = 'a';
-		else if (this.speed >53 && this.speed <= 73)
-			tribu[2] = 'b';
-		else if (this.speed > 73)
-			tribu[2] = 'c';
-		
+		float[] stats_and_bounds = {
+				strength, MIN_STRENGTH, MAX_STRENGTH,
+				sociality,MIN_SOCIALITY, MAX_SOCIALITY,
+				speed, MIN_SPEED, MAX_SPEED};
+		for (int i = 0; i < stats_and_bounds.length; i+=3) {
+			float lower_bound = stats_and_bounds[i + 1];
+			float upper_bound = stats_and_bounds[i + 2];
+			
+			if (stats_and_bounds[i] < lower_bound + (upper_bound - lower_bound) / 3)
+				tribu[i/3] = 'c';
+			else if (stats_and_bounds[i] < lower_bound + 2 * (upper_bound - lower_bound) / 3)
+				tribu[i/3] = 'b';
+			else 
+				tribu[i/3] = 'a';
+		}
 		return String.copyValueOf(tribu); 
 	}
 	
@@ -89,13 +88,13 @@ public class Omino extends Entity {
 		for (char c : tribu.toCharArray()) {
 			switch (c) {
 			case 'a':
-				rgb[curr_col] = 0;
+				rgb[curr_col] = 1;
 				break;
 			case 'b':
 				rgb[curr_col] = 0.5f;
 				break;
 			case 'c':
-				rgb[curr_col] = 1;
+				rgb[curr_col] = 0;
 				break;
 			}
 			
@@ -124,16 +123,24 @@ public class Omino extends Entity {
 		float [] Score = new float[Dintorni.size]; //lista di score 
 		for (int i = 0; i < Dintorni.size; i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
 			float dst = gridposition.dst2(Dintorni.get(i).gridposition) / (2*RAGGIO_VISIVO * RAGGIO_VISIVO);
-			if (Dintorni.get(i) instanceof Palma)  
-				Score[i] = (this.hunger * this.hunger) / (dst + 1);
+			
+			if (Dintorni.get(i) instanceof Palma) {
+				Score[i] = this.hunger / (dst + 1);
+			    //Gdx.app.log("Score Palma", ""+Score[i]);
+			}
 			else if (Dintorni.get(i) instanceof Omino) {
-				if (tribu.equals(((Omino) Dintorni.get(i)).tribu))
+				if (tribu.equals(((Omino) Dintorni.get(i)).tribu)) {
 			      if (life >=15)
 			    	  Score[i] = 0;
 			      else
-					Score[i] = (this.sociality + 1) / (dst + 1);
-			    else //perche altrimenti selezionerei anche le posizioni vuote
-			    	Score[i] = (this.strength * this.hunger) / (dst + 1) - .5f;
+					Score[i] = (this.sociality) / (dst + 1);
+			      
+			      //Gdx.app.log("Score Amico", ""+Score[i]);
+				}
+			    else {//perche altrimenti selezionerei anche le posizioni vuote
+			    	Score[i] = (this.strength * this.hunger * this.hunger) / (dst + 1);
+				    //Gdx.app.log("Score Nemico", ""+Score[i]);
+			    }
 			}
 			else 
 				Score[i] = -1;
