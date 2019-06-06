@@ -118,6 +118,7 @@ public class Pasquisland extends ApplicationAdapter {
 	public void startSimulation() {
 		mappone.spammaOmini(.1f);
 		mappone.spammaPalme(.1f);
+		mappone.spammaDrago();
 	}
 	
 	public void stopSimulation() {
