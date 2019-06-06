@@ -36,18 +36,10 @@ public class MainUI extends Stage {
 	
 	private void init(Skin skin) {
 		this.skin = skin;
-		ui_window = new Window("TITLE", skin);
+		ui_window = new Window("SETTINGS", skin);
 		ui_window.setResizable(true);
-		buildMainUI();
-		main_table.setFillParent(true);
-		main_table.validate();
-		main_table.layout();
-		addActor(main_table);
-		addActor(ui_window);
-		setDebugAll(true);
-	}
-	
-	private void buildMainUI() {
+		ui_window.setPosition(getWidth(), getHeight());
+		ui_window.setSize(getWidth()/5, getHeight());
 		getRoot().addCaptureListener(new InputListener() {
 		    public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
 		        if (!(event.getTarget() instanceof TextField)) setKeyboardFocus(null);
@@ -59,18 +51,22 @@ public class MainUI extends Stage {
 		fps = new Label("FPS : ",skin);
 		
 		main_table.add(fps).left().top().expand();
+		main_table.setFillParent(true);
+		main_table.validate();
+		main_table.layout();
+		addActor(main_table);
+		addActor(ui_window);
+		setDebugAll(true);
 	}
-	
 
 	private void startSimulation() {
+		ui_window.getTitleLabel().setText("SIMULATION");
 		((Pasquisland) Gdx.app.getApplicationListener()).startSimulation();
-		main_table.layout();
-		Gdx.app.getApplicationListener().resize((int)getWidth(), (int)getHeight());
 	};
 	
 	private void stopSimulation() {
-		main_table.layout();
-		Gdx.app.getApplicationListener().resize((int)getWidth(), (int)getHeight());
+		ui_window.getTitleLabel().setText("SETTINGS");
+		((Pasquisland) Gdx.app.getApplicationListener()).stopSimulation();
 	}
 	
 	@Override
