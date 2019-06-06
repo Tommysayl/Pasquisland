@@ -13,7 +13,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-import sgs.entities.Drago;
+
 import sgs.entities.Entity;
 import sgs.entities.Omino;
 import sgs.entities.Palma;
@@ -91,6 +91,7 @@ public class Mappone {
 		batch.disableBlending();
 		batch.end();
 	}
+
 	
 	public void disegnaMappetta(ShapeRenderer sr, int[] che_se_vede) {
 		map.render(sr, che_se_vede[0], che_se_vede[1], che_se_vede[2], che_se_vede[3]);
@@ -189,13 +190,13 @@ public class Mappone {
 			}
 		}
 		if(add_pos==true) {
-		RaggioVisivo.add(posizioneIntorno(omino.gridposition));
+		RaggioVisivo.add(DoVadoACaso(omino.gridposition));
 		}
 		return RaggioVisivo;
 		
 	}
 	
-	public posRandom posizioneIntorno(GridPoint2 posizione) {
+	public posRandom DoVadoACaso(GridPoint2 posizione) {
 		posRandom newpos = new posRandom(posizione.x*WorldMap.tile_size, posizione.y*WorldMap.tile_size);
 		newpos.gridposition= posizione.cpy(); 
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
@@ -212,8 +213,22 @@ public class Mappone {
 		return newpos;
 	}
 	
-	
-	
+	public posRandom DoMeRiproduco(GridPoint2 posizione) {
+		posRandom newpos = new posRandom(posizione.x*WorldMap.tile_size, posizione.y*WorldMap.tile_size);
+		newpos.gridposition= posizione.cpy(); 
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(3)-1;
+		int r2= r.nextInt(3)-1;
+		if (posizione.x+r1<= map.getWidth() && posizione.x+r1>=0 && posizione.y+r2<=map.getHeight() && posizione.y+r2>=0) {
+			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
+					newpos.gridposition.x= posizione.x+r1;
+					newpos.gridposition.y= posizione.y+r2;
+					newpos.position.x= (posizione.x+r1)*WorldMap.tile_size;
+					newpos.position.y= (posizione.y+r2)*WorldMap.tile_size;
+			}
+		}
+		return newpos;
+	}
 	
 	
 	public Array<Entity> vedi(Entity omino, int raggio){
@@ -228,13 +243,13 @@ public class Mappone {
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		int r1= r.nextInt(2);
 		if(r1==0) {
-			posRandom posBimbo= posizioneIntorno(genitore1.gridposition);
+			posRandom posBimbo= DoMeRiproduco(genitore1.gridposition);
 			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(posBimbo.gridposition.x,posBimbo.gridposition.y).add(bimbo);
 		}
 		else if(r1==1) {
-			posRandom posBimbo= posizioneIntorno(genitore2.gridposition);
+			posRandom posBimbo= DoMeRiproduco(genitore2.gridposition);
 			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(posBimbo.gridposition.x,posBimbo.gridposition.y).add(bimbo);
@@ -256,14 +271,19 @@ public class Mappone {
 					for( Entity entita: chiCeStaQua(x,y)) {
 						if(entita instanceof Omino) {
 							nellaGriglia.add(entita);
+							if(entita.life==-1) {
+
+							}
 							}
 						}
 					}
 				}
 			}	
+
+	
 	
 	public void spawnaPalmaQuaVicino(GridPoint2 posizione) {
-		posRandom newpos= posizioneIntorno(posizione);
+		posRandom newpos= DoMeRiproduco(posizione);
 		if(!presente(newpos.gridposition.x,newpos.gridposition.y,Palma.class) && map.getTerrainTypeAt(newpos.gridposition.x, newpos.gridposition.y)!= map.sand_id) {
 			Palma palmetta= new Palma(newpos.gridposition.x*map.tile_size, newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(palmetta);
