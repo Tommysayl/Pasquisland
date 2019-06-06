@@ -218,16 +218,16 @@ public class Mappone {
 	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
 		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
 		int y= (genitore1.gridposition.y + genitore2.gridposition.y)/2;
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+
 		if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
 			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(x,y).add(bimbo); 
-			/*Mancano i valori di forza socievolezza e velocit�
-			 * non sappiamo se il controllo nell'acqua sia utile o no
-			 */
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
+
 		}
 		else {
-			Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 			while(map.getTerrainTypeAt(x, y) != WorldMap.water_id) {
 				int r1= r.nextInt(3)-1;
 				int r2= r.nextInt(3)-1;
@@ -237,7 +237,16 @@ public class Mappone {
 			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
 			da_aggiornare.add(bimbo);
 			chiCeStaQua(x, y).add(bimbo);
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
 		}
+	}
+	
+	private void assegnaNuoviValoriAlBimbo(Omino genitore1, Omino genitore2, Omino bimbo) {
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		bimbo.setValues(
+				genitore1.strength + genitore2.strength * r.nextFloat() / 10 * r.nextInt(3) - 1,
+				genitore1.sociality + genitore2.sociality * r.nextFloat() / 10 * r.nextInt(3) - 1,
+				genitore1.speed + genitore2.speed * r.nextFloat() / 10 * r.nextInt(3) - 1);
 	}
 	
 	public void vediRect(Rectangle rettangolo) {
