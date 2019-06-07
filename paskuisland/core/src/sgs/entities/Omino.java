@@ -21,8 +21,8 @@ public class Omino extends Entity {
 	public static final int RAGGIO_VISIVO = 4;
 	public static final float ACTION_DST = 20;
 	//public static final float BLOCCO_INT = 2;
-	public static final float PREGNANCY = .2f;
-	public static final float HUNGER_PER_SECOND = .2f; // la fame arriva a 1 in 5 sec
+	public static final float PREGNANCY = .05f;
+	public static final float HUNGER_PER_SECOND = .1f; // la fame arriva a 1 in 5 sec
 	
 	/* BOUNDARIES FOR STATS */
 	public static final float MIN_STRENGTH = 0, MAX_STRENGTH = 1;
@@ -126,7 +126,7 @@ public class Omino extends Entity {
 			
 			if (Dintorni.get(i) instanceof Palma) {
 				Score[i] = this.hunger / (dst + 1);
-			    //Gdx.app.log("Score Palma", ""+Score[i]);
+			    Gdx.app.log("Score Palma", ""+Score[i]);
 			}
 			else if (Dintorni.get(i) instanceof Omino) {
 				if (tribu.equals(((Omino) Dintorni.get(i)).tribu)) {
@@ -135,11 +135,11 @@ public class Omino extends Entity {
 			      else
 					Score[i] = (this.sociality) / (dst + 1);
 			      
-			      //Gdx.app.log("Score Amico", ""+Score[i]);
+			      Gdx.app.log("Score Amico", ""+Score[i]);
 				}
 			    else {//perche altrimenti selezionerei anche le posizioni vuote
-			    	Score[i] = (this.strength * this.hunger * this.hunger) / (dst + 1);
-				    //Gdx.app.log("Score Nemico", ""+Score[i]);
+			    	Score[i] = (this.strength * this.hunger) / (dst + 1);
+				    Gdx.app.log("Score Nemico", ""+Score[i]);
 			    }
 			}
 			else 
