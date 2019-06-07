@@ -3,6 +3,8 @@ package sgs.map;
 import java.util.HashMap;
 import java.util.Random;
 
+
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -19,37 +21,26 @@ import sgs.entities.Palma;
 import sgs.entities.posRandom;
 import sgs.pasquisland.Pasquisland;
 
-/**
- * 
- * Gestisce le entit√† e la mappa
- * insomma √® il big changus di pasquisland
- *
- */
+
 public class Mappone {
-	
+
 	private static Mappone singleton;
-	
-	private WorldMap map; // mappa con le grafiche e ti dice se √® acqua o terra il terreno
-	
+	private WorldMap map; // mappa con le grafiche e ti dice se Ë acqua o terra il terreno
 	private HashMap<GridPoint2, Array<Entity>> mappa_entita; // mappa 2d delle entita
-	
 	private Array<Entity> da_aggiornare;
 	private Array<Entity> crepate;
 	private Array<Entity> girini;
 	private Array<Entity> nellaGriglia;
-
 	private int selected = 0;
 
 	public Mappone(int map_width, int map_height) {
 		if (singleton == null) singleton = this;
-		
 		float[] terrain_values = new float[3];
 		terrain_values[0] = .2f;
 		terrain_values[1] = .3f;
 		terrain_values[2] = .9f;
 		map = new WorldMap(map_width, map_height, ((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(1000000),
 				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true, .1f);
-		
 		mappa_entita = new HashMap<GridPoint2, Array<Entity>>();
 		nellaGriglia= new Array<Entity>();
 		da_aggiornare = new Array<Entity>();
@@ -63,25 +54,24 @@ public class Mappone {
 			if (e.life <= 0)
 				crepate.add(e);
 		}
-		
 		da_aggiornare.removeAll(crepate, true);
 		for (Entity e : crepate)
 			chiCeStaQua(e.gridposition).removeValue(e, true);
 		crepate.clear();
 	}
-	
+
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
 		disegnaMappetta(sr, che_se_vede);
 		sr.begin(ShapeType.Filled);
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
 			for (Entity e :vedi((Omino) entita, Omino.RAGGIO_VISIVO)) {
-				sr.rect(e.position.x, e.position.y, 30, 30); //perchÔøΩ ogni quadrato ÔøΩ 32x32 => per non avere rettangoli in caso di entitÔøΩ vicine considero un'area minore :)	
+				sr.rect(e.position.x, e.position.y, 30, 30); //perchË ogni quadrato Ë 32x32 => per non avere rettangoli in caso di entit‡ vicine considero un'area minore :)	
 			}
 		}
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.CHARTREUSE);
-			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchÔøΩ ogni quadrato ÔøΩ 32x32 => per non avere rettangoli in caso di entitÔøΩ vicine considero un'area minore :)
+			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchË ogni quadrato Ë 32x32 => per non avere rettangoli in caso di entit‡ vicine considero un'area minore :)
 		}
 		sr.end();
 		batch.begin();
@@ -99,18 +89,15 @@ public class Mappone {
 		for (Entity e : da_aggiornare)
 			e.disegnami(batch);
 	}
-	
+
 	public Array<Entity> chiCeStaQua(GridPoint2 qua) {
 		Array<Entity> ecco_la_lista = mappa_entita.get(qua);
 		if (ecco_la_lista == null) {
 			ecco_la_lista = new Array<Entity>();
 			mappa_entita.put(qua, ecco_la_lista);
 		}
-		
 		return ecco_la_lista;
 	}
-	
-	
 	public Array<Entity> chiCeStaQua(int x, int y) {
 		GridPoint2 p = new GridPoint2(x,y);
 		return chiCeStaQua(p);
@@ -118,8 +105,8 @@ public class Mappone {
 	
 	public WorldMap getMap() {
 		return map;
-	}
-	
+	}	
+
 	public void spammaOmini(float densita) {
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		for(int y=0; y<map.getHeight(); y++) {
@@ -134,7 +121,7 @@ public class Mappone {
 			}
 		}
 	}
-	
+
 	public void spammaPalme(float densita){
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		for(int y=0; y<map.getHeight(); y++) {
@@ -149,7 +136,7 @@ public class Mappone {
 			}
 		}
 	}
-	
+
 	public void ammazzaOmini() {
 		for(int y=0; y<map.getHeight(); y++) {
 			for(int x=0; x< map.getWidth(); x++) {
@@ -164,6 +151,24 @@ public class Mappone {
 
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
+	public posRandom posizioneIntorno(GridPoint2 posizione) {
+		posRandom newpos = new posRandom(posizione.x*map.tile_size,posizione.y*map.tile_size);
+		newpos.gridposition= posizione.cpy(); 
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(3)-1;
+		int r2= r.nextInt(3)-1;
+		if (posizione.x+r1< map.getWidth() && posizione.x+r1>0 && posizione.y+r2<map.getHeight() && posizione.y+r2>0) {
+			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
+					newpos.gridposition.x= posizione.x+r1;
+					newpos.gridposition.y= posizione.y+r2;
+					newpos.position.x= (posizione.x+r1)*map.tile_size;
+					newpos.position.y= (posizione.y+r2)*map.tile_size;
+			}
+		}
+		return newpos;
+		
+		
+	}
 	public Array<Entity> vedi(Entity omino,int raggio, boolean add_pos){
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
@@ -174,9 +179,9 @@ public class Mappone {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								if(entita != omino) {
 									RaggioVisivo.add(entita);
-								}
 							}
 						}
+					}
 						else if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								RaggioVisivo.add(entita);
@@ -184,33 +189,18 @@ public class Mappone {
 						}
 					}
 				}
-
 			}
 		}
 		if(add_pos==true) {
-		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
-		newpos.gridposition= omino.gridposition.cpy(); 
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(3)-1;
-		int r2= r.nextInt(3)-1;
-		if (omino.gridposition.x+r1<= map.getWidth() && omino.gridposition.x+r1>=0 && omino.gridposition.y+r2<=map.getHeight() && omino.gridposition.y+r2>=0) {
-			if(map.getTerrainTypeAt(omino.gridposition.x+r1, omino.gridposition.y+r2)!= WorldMap.water_id) {
-
-					newpos.gridposition.x= omino.gridposition.x+r1;
-					newpos.gridposition.y= omino.gridposition.y+r2;
-					newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
-					newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
-			}
-		}
-		RaggioVisivo.add(newpos);
+		RaggioVisivo.add(posizioneIntorno(omino.gridposition));
 		}
 		return RaggioVisivo;
-		
 	}
+
 	public Array<Entity> vedi(Entity omino, int raggio){
 		return vedi(omino,raggio, true);
+		
 	}
-	
 	public static Mappone getInstance() {
 		return  singleton;
 	}
@@ -219,37 +209,29 @@ public class Mappone {
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		int r1= r.nextInt(2);
 		if(r1==0) {
-			posRandom posBimbo= DoMeRiproduco(genitore1.gridposition);
-			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
-		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
-		int y= (genitore1.gridposition.y + genitore2.gridposition.y)/2;
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-
-		if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
-			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+			posRandom newpos= posizioneIntorno(genitore1.gridposition);
+			Omino bimbo= new Omino(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
-			chiCeStaQua(posBimbo.gridposition.x,posBimbo.gridposition.y).add(bimbo);
-			chiCeStaQua(x,y).add(bimbo); 
+			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(bimbo);
 			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
-
 		}
-		else if(r1==1) {
-			posRandom posBimbo= DoMeRiproduco(genitore2.gridposition);
-			Omino bimbo= new Omino(posBimbo.gridposition.x*map.tile_size,posBimbo.gridposition.y*map.tile_size);
-		else {
-			while(map.getTerrainTypeAt(x, y) != WorldMap.water_id) {
-				int r1= r.nextInt(3)-1;
-				int r2= r.nextInt(3)-1;
-				x+=r1;
-				y+=r2;
-			}
-			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+		else if(r1==1){
+			posRandom newpos= posizioneIntorno(genitore2.gridposition);
+			Omino bimbo= new Omino(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
-			chiCeStaQua(x, y).add(bimbo);
+			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(bimbo);
 			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
 		}
 	}
 	
+	private void assegnaNuoviValoriAlBimbo(Omino genitore1, Omino genitore2, Omino bimbo) {
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		bimbo.setValues(
+				genitore1.strength + genitore2.strength * r.nextFloat() / 10 * r.nextInt(3) - 1,
+				genitore1.sociality + genitore2.sociality * r.nextFloat() / 10 * r.nextInt(3) - 1,
+				genitore1.speed + genitore2.speed * r.nextFloat() / 10 * r.nextInt(3) - 1);
+	}
+
 	public void vediRect(Rectangle rettangolo) {
 		nellaGriglia.clear();
 		int xgs= (int) (rettangolo.x/map.tile_size);//vertice basso sx griglia
@@ -265,25 +247,21 @@ public class Mappone {
 					for( Entity entita: chiCeStaQua(x,y)) {
 						if(entita instanceof Omino) {
 							nellaGriglia.add(entita);
-							if(entita.life==-1) {
-
-							}
 							}
 						}
 					}
 				}
 			}	
 
-	
-	
 	public void spawnaPalmaQuaVicino(GridPoint2 posizione) {
-		posRandom newpos= DoMeRiproduco(posizione);
-		if(!presente(newpos.gridposition.x,newpos.gridposition.y,Palma.class) && map.getTerrainTypeAt(newpos.gridposition.x, newpos.gridposition.y)!= map.sand_id) {
-			Palma palmetta= new Palma(newpos.gridposition.x*map.tile_size, newpos.gridposition.y*map.tile_size);
+	posRandom newpos= posizioneIntorno(posizione);
+	if(map.getTerrainTypeAt(newpos.gridposition.x, newpos.gridposition.y)== map.land_id) {
+		if(!presente(newpos.gridposition.x,newpos.gridposition.y,Palma.class)) {
+			Palma palmetta= new Palma(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(palmetta);
 			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(palmetta);
 			return;
-
+			}
 		}
 	}
 	
@@ -295,5 +273,6 @@ public class Mappone {
 		return false;
 	}
 	
-	
+
+
 }
