@@ -86,13 +86,13 @@ public class Omino extends Entity {
 		float [] Score = new float[Dintorni.size]; //lista di score 
 		for (int i = 0; i < Dintorni.size; i++) {//per il scorrere el in una lista scrivo for tipo di el della lista, nome che voglio dare agli el, :, nome della lista
 			if (Dintorni.get(i) instanceof Palma)  
-				Score[i] = (this.hunger * this.hunger);
+				Score[i] = (this.hunger );
 			else if (Dintorni.get(i) instanceof Omino) {
 				if (tribu.equals(((Omino) Dintorni.get(i)).tribu))
 			      if (life >=15)
 			    	  Score[i] = 0;
 			      else
-					Score[i] = (this.sociality * this.sociality) ;
+					Score[i] = (this.sociality) ;
 			    else //perche altrimenti selezionerei anche le posizioni vuote
 			    	Score[i] = (this.strength * this.hunger);
 			}
@@ -152,26 +152,37 @@ public class Omino extends Entity {
     	
     	if (Obiettivo instanceof Omino) {
     		if (tribu.equals(((Omino) Obiettivo).tribu)) {
-    			if (sociality > hunger) {
+    			if (sociality > hunger ) {
     				Mappone.getInstance().spawnaBimbo(this, (Omino) Obiettivo);
     				UltimiInc.add(new Tuple<Entity, Float>(Obiettivo,BLOCCO_INT));
     			}
     			else {
+    				if (((Omino) Obiettivo).strength > this.strength) {
+    					this.life = -1;
+    				    ((Omino) Obiettivo).hunger = 0;
+    				}
+    				else {
     				Obiettivo.life = -1;
     				hunger = 0;
+    				}
     			}
     		}
     		else {
-    			if (((Omino) Obiettivo).strength > strength ) {
+    			
+    			
+    		 {	
+    				if (((Omino) Obiettivo).strength > strength ) {
     				life = -1;
     				((Omino) Obiettivo).hunger = 0;
     			}
-    			else {
+    				else {
     				((Omino) Obiettivo).life = -1;
     				hunger = 0;
     			}
     			
     		}
     	}
+    	
+    	}
     }
-}
+    }
