@@ -48,7 +48,7 @@ public class Omino extends Entity {
 		setValues(r.nextFloat(),r.nextFloat(),r.nextInt((int) (MAX_SPEED - MIN_SPEED))+MIN_SPEED);
 		
 		this.hunger = 0f; 	
-		life = 20;
+		life = 15;
 		//UltimiInc = new Array<Tuple<Entity,Float>>();
 		//toRemove = new Array<Tuple<Entity,Float>>();
 		wait_for_next_child = PREGNANCY;
@@ -59,6 +59,7 @@ public class Omino extends Entity {
 		  this.sociality =  sociality;
 		  this.speed =  speed;
 		  tribu = dammiTribu();
+		  life = 20;
 	  }
 	  
 	
@@ -126,29 +127,29 @@ public class Omino extends Entity {
 			
 			if (Dintorni.get(i) instanceof Palma) {
 				Score[i] = this.hunger / (dst + 1);
-			    Gdx.app.log("Score Palma", ""+Score[i]);
+			    //Gdx.app.log("Score Palma", ""+Score[i]);
 			}
 			else if (Dintorni.get(i) instanceof Omino) {
 				if (tribu.equals(((Omino) Dintorni.get(i)).tribu)) {
-			      if (life >=15)
-			    	  Score[i] = 0;
+			      if (life >=15 || wait_for_next_child > 0 || Dintorni.get(i).life >= 15 || ((Omino)Dintorni.get(i)).wait_for_next_child > 0)
+			    	  Score[i] = -1;
 			      else
 					Score[i] = (this.sociality) / (dst + 1);
 			      
-			      Gdx.app.log("Score Amico", ""+Score[i]);
+			      //Gdx.app.log("Score Amico", ""+Score[i]);
 				}
 			    else {//perche altrimenti selezionerei anche le posizioni vuote
 			    	Score[i] = (this.strength * this.hunger) / (dst + 1);
-				    Gdx.app.log("Score Nemico", ""+Score[i]);
+				    //Gdx.app.log("Score Nemico", ""+Score[i]);
 			    }
 			}
 			else 
-				Score[i] = -1;
+				Score[i] = 0;
 		}
 		float max = Score[0];
 		int j = 0;
 	    for (int i = 0; i < Score.length;i++) {
-		    if (Score[i] > max ) {
+		    if (Score[i] >= max ) {
 		    	max = Score[i];
 		    	j = i; //j � l'indice del massimo
 		    }  
@@ -241,6 +242,7 @@ public class Omino extends Entity {
 		//((Omino) Obiettivo).UltimiInc.add(new Tuple<Entity, Float>(this,BLOCCO_INT));
 		hunger += .1f;
 		wait_for_next_child = PREGNANCY;
+		//((Omino)Obiettivo).wait_for_next_child = PREGNANCY;
     }
     
     /**
