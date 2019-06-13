@@ -153,7 +153,11 @@ public class Omino extends Entity {
 		    	j = i; //j � l'indice del massimo
 		    }  
 	    }
-		Obiettivo = Dintorni.get(j);   
+		Obiettivo = Dintorni.get(j);
+		if(Obiettivo== null) {
+			posRandom newpos= Mappone.getInstance().posizioneIntorno(this.gridposition);
+			Obiettivo= newpos;
+		}
 	}
 	public void move(float delta) {
 		    Vector2 direction = Obiettivo.position.cpy().sub(position);
