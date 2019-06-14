@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -25,7 +26,7 @@ import sgs.pasquisland.Pasquisland;
 public class Mappone {
 
 	private static Mappone singleton;
-	private WorldMap map; // mappa con le grafiche e ti dice se è acqua o terra il terreno
+	private WorldMap map; // mappa con le grafiche e ti dice se ï¿½ acqua o terra il terreno
 	private HashMap<GridPoint2, Array<Entity>> mappa_entita; // mappa 2d delle entita
 	private Array<Entity> da_aggiornare;
 	private Array<Entity> crepate;
@@ -66,12 +67,12 @@ public class Mappone {
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.RED);
 			for (Entity e :vedi((Omino) entita, Omino.RAGGIO_VISIVO)) {
-				sr.rect(e.position.x, e.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)	
+				sr.rect(e.position.x, e.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)	
 			}
 		}
 		for (Entity entita : nellaGriglia) {
 			sr.setColor(Color.CHARTREUSE);
-			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchè ogni quadrato è 32x32 => per non avere rettangoli in caso di entità vicine considero un'area minore :)
+			sr.rect(entita.position.x, entita.position.y, 30, 30); //perchï¿½ ogni quadrato ï¿½ 32x32 => per non avere rettangoli in caso di entitï¿½ vicine considero un'area minore :)
 		}
 		sr.end();
 		batch.begin();
@@ -79,6 +80,11 @@ public class Mappone {
 		disegnaEntita(batch);
 		batch.disableBlending();
 		batch.end();
+		for( Entity e: nellaGriglia) {
+			if(e.life<0) {
+				nellaGriglia.removeValue(e, true);
+			}
+		}
 	}
 	
 	public void disegnaMappetta(ShapeRenderer sr, int[] che_se_vede) {
@@ -155,8 +161,8 @@ public class Mappone {
 		posRandom newpos = new posRandom(posizione.x*map.tile_size,posizione.y*map.tile_size);
 		newpos.gridposition= posizione.cpy(); 
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(3)-1;
-		int r2= r.nextInt(3)-1;
+		int r1= r.nextInt(4)-1;
+		int r2= r.nextInt(4)-1;
 		if (posizione.x+r1< map.getWidth() && posizione.x+r1>0 && posizione.y+r2<map.getHeight() && posizione.y+r2>0) {
 			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
 					newpos.gridposition.x= posizione.x+r1;
@@ -227,9 +233,9 @@ public class Mappone {
 	private void assegnaNuoviValoriAlBimbo(Omino genitore1, Omino genitore2, Omino bimbo) {
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		bimbo.setValues(
-				genitore1.strength + genitore2.strength * r.nextFloat() / 10 * r.nextInt(3) - 1,
-				genitore1.sociality + genitore2.sociality * r.nextFloat() / 10 * r.nextInt(3) - 1,
-				genitore1.speed + genitore2.speed * r.nextFloat() / 10 * r.nextInt(3) - 1);
+				MathUtils.clamp(genitore1.strength + genitore2.strength * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_STRENGTH, Omino.MAX_STRENGTH),
+				MathUtils.clamp(genitore1.sociality + genitore2.sociality * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_SOCIALITY, Omino.MAX_SOCIALITY),
+				MathUtils.clamp(genitore1.speed + genitore2.speed * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_SPEED, Omino.MAX_SPEED));
 	}
 
 	public void vediRect(Rectangle rettangolo) {

@@ -18,7 +18,7 @@ import sgs.ui.MainUI;
 
 /**
  * Ciao belli,
- * questa Ã¨ la classe che gestisce tutte le cose , Ã¨ la classe centrale che chiama
+ * questa è la classe che gestisce tutte le cose , è la classe centrale che chiama
  * e crea le altre classi!
  *
  */
@@ -116,8 +116,8 @@ public class Pasquisland extends ApplicationAdapter {
 	}
 	
 	public void startSimulation() {
-		mappone.spammaOmini(.2f);
-		mappone.spammaPalme(.5f);
+		mappone.spammaOmini(.1f);
+		mappone.spammaPalme(.3f);
 	}
 	
 	public void stopSimulation() {
