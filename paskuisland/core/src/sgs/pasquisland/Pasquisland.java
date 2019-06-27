@@ -116,40 +116,8 @@ public class Pasquisland extends ApplicationAdapter {
 	}
 	
 	public void startSimulation() {
-		mappone.spammaOmini(.02f);
-		mappone.spammaPalme(.1f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
-		mappone.spammaOmini(.3f);
-		mappone.spammaPalme(.5f);
+		mappone.spammaOmini(.1f);
+		mappone.spammaPalme(.3f);
 	}
 	
 	public void stopSimulation() {

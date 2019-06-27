@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.GridPoint2;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -19,37 +20,29 @@ import sgs.entities.Palma;
 import sgs.entities.posRandom;
 import sgs.pasquisland.Pasquisland;
 
-/**
- * 
- * Gestisce le entità e la mappa
- * insomma è il big changus di pasquisland
- *
- */
+
 public class Mappone {
-	
+
 	private static Mappone singleton;
 	
-	private WorldMap map; // mappa con le grafiche e ti dice se è acqua o terra il terreno
+
 	
+	private WorldMap map; // mappa con le grafiche e ti dice se � acqua o terra il terreno
 	private HashMap<GridPoint2, Array<Entity>> mappa_entita; // mappa 2d delle entita
-	
 	private Array<Entity> da_aggiornare;
 	private Array<Entity> crepate;
 	private Array<Entity> girini;
 	private Array<Entity> nellaGriglia;
-
 	private int selected = 0;
 
 	public Mappone(int map_width, int map_height) {
 		if (singleton == null) singleton = this;
-		
 		float[] terrain_values = new float[3];
 		terrain_values[0] = .2f;
 		terrain_values[1] = .3f;
 		terrain_values[2] = .9f;
 		map = new WorldMap(map_width, map_height, ((Pasquisland) Gdx.app.getApplicationListener()).getRandom().nextInt(1000000),
 				200f, 4, .3f, 2f, Vector2.Zero, terrain_values, true, .1f);
-		
 		mappa_entita = new HashMap<GridPoint2, Array<Entity>>();
 		nellaGriglia= new Array<Entity>();
 		da_aggiornare = new Array<Entity>();
@@ -63,13 +56,12 @@ public class Mappone {
 			if (e.life <= 0)
 				crepate.add(e);
 		}
-		
 		da_aggiornare.removeAll(crepate, true);
 		for (Entity e : crepate)
 			chiCeStaQua(e.gridposition).removeValue(e, true);
 		crepate.clear();
 	}
-	
+
 	public void disegnaTutto(SpriteBatch batch, ShapeRenderer sr, int[] che_se_vede) {
 		disegnaMappetta(sr, che_se_vede);
 		sr.begin(ShapeType.Filled);
@@ -99,18 +91,15 @@ public class Mappone {
 		for (Entity e : da_aggiornare)
 			e.disegnami(batch);
 	}
-	
+
 	public Array<Entity> chiCeStaQua(GridPoint2 qua) {
 		Array<Entity> ecco_la_lista = mappa_entita.get(qua);
 		if (ecco_la_lista == null) {
 			ecco_la_lista = new Array<Entity>();
 			mappa_entita.put(qua, ecco_la_lista);
 		}
-		
 		return ecco_la_lista;
 	}
-	
-	
 	public Array<Entity> chiCeStaQua(int x, int y) {
 		GridPoint2 p = new GridPoint2(x,y);
 		return chiCeStaQua(p);
@@ -118,8 +107,8 @@ public class Mappone {
 	
 	public WorldMap getMap() {
 		return map;
-	}
-	
+	}	
+
 	public void spammaOmini(float densita) {
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		for(int y=0; y<map.getHeight(); y++) {
@@ -134,7 +123,7 @@ public class Mappone {
 			}
 		}
 	}
-	
+
 	public void spammaPalme(float densita){
 		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
 		for(int y=0; y<map.getHeight(); y++) {
@@ -149,7 +138,7 @@ public class Mappone {
 			}
 		}
 	}
-	
+
 	public void ammazzaOmini() {
 		for(int y=0; y<map.getHeight(); y++) {
 			for(int x=0; x< map.getWidth(); x++) {
@@ -164,6 +153,25 @@ public class Mappone {
 
 	public int getPopulationCount() {return da_aggiornare.size;}
 	
+
+	public posRandom posizioneIntorno(GridPoint2 posizione) {
+		posRandom newpos = new posRandom(posizione.x*map.tile_size,posizione.y*map.tile_size);
+		newpos.gridposition= posizione.cpy(); 
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(4)-1;
+		int r2= r.nextInt(4)-1;
+		if (posizione.x+r1< map.getWidth() && posizione.x+r1>0 && posizione.y+r2<map.getHeight() && posizione.y+r2>0) {
+			if(map.getTerrainTypeAt(posizione.x+r1, posizione.y+r2)!= WorldMap.water_id) {
+					newpos.gridposition.x= posizione.x+r1;
+					newpos.gridposition.y= posizione.y+r2;
+					newpos.position.x= (posizione.x+r1)*map.tile_size;
+					newpos.position.y= (posizione.y+r2)*map.tile_size;
+			}
+		}
+		return newpos;
+		
+		
+	}
 	public Array<Entity> vedi(Entity omino,int raggio, boolean add_pos){
 		Array<Entity> RaggioVisivo= new Array<Entity>();
 		for( int y=omino.gridposition.y-raggio; y<= omino.gridposition.y+raggio; y++) {
@@ -174,9 +182,9 @@ public class Mappone {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								if(entita != omino) {
 									RaggioVisivo.add(entita);
-								}
 							}
 						}
+					}
 						else if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
 							for(Entity entita: chiCeStaQua(x,y)) {
 								RaggioVisivo.add(entita);
@@ -184,62 +192,50 @@ public class Mappone {
 						}
 					}
 				}
-
 			}
 		}
 		if(add_pos==true) {
-		posRandom newpos = new posRandom(omino.position.x, omino.position.y);
-		newpos.gridposition= omino.gridposition.cpy(); 
-		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-		int r1= r.nextInt(3)-1;
-		int r2= r.nextInt(3)-1;
-		if (omino.gridposition.x+r1<= map.getWidth() && omino.gridposition.x+r1>=0 && omino.gridposition.y+r2<=map.getHeight() && omino.gridposition.y+r2>=0) {
-			if(map.getTerrainTypeAt(omino.gridposition.x+r1, omino.gridposition.y+r2)!= WorldMap.water_id) {
-
-					newpos.gridposition.x= omino.gridposition.x+r1;
-					newpos.gridposition.y= omino.gridposition.y+r2;
-					newpos.position.x= omino.position.x+r1*WorldMap.tile_size;
-					newpos.position.y= omino.position.y+r2*WorldMap.tile_size;
-			}
-		}
-		RaggioVisivo.add(newpos);
+		RaggioVisivo.add(posizioneIntorno(omino.gridposition));
 		}
 		return RaggioVisivo;
-		
 	}
+
 	public Array<Entity> vedi(Entity omino, int raggio){
 		return vedi(omino,raggio, true);
+		
 	}
-	
 	public static Mappone getInstance() {
 		return  singleton;
 	}
 	
 	public void spawnaBimbo(Omino genitore1, Omino genitore2) {
-		int x= (genitore1.gridposition.x + genitore2.gridposition.x)/2;
-		int y= (genitore1.gridposition.y + genitore2.gridposition.y)/2;
-		if(map.getTerrainTypeAt(x, y)!= WorldMap.water_id) {
-			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		int r1= r.nextInt(2);
+		if(r1==0) {
+			posRandom newpos= posizioneIntorno(genitore1.gridposition);
+			Omino bimbo= new Omino(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
-			chiCeStaQua(x,y).add(bimbo); 
-			/*Mancano i valori di forza socievolezza e velocit�
-			 * non sappiamo se il controllo nell'acqua sia utile o no
-			 */
+			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(bimbo);
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
 		}
-		else {
-			Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
-			while(map.getTerrainTypeAt(x, y) != WorldMap.water_id) {
-				int r1= r.nextInt(3)-1;
-				int r2= r.nextInt(3)-1;
-				x+=r1;
-				y+=r2;
-			}
-			Omino bimbo= new Omino(x*map.tile_size,y*map.tile_size);
+		else if(r1==1){
+			posRandom newpos= posizioneIntorno(genitore2.gridposition);
+			Omino bimbo= new Omino(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
 			da_aggiornare.add(bimbo);
-			chiCeStaQua(x, y).add(bimbo);
+			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(bimbo);
+			assegnaNuoviValoriAlBimbo(genitore1, genitore2, bimbo);
 		}
 	}
 	
+
+	private void assegnaNuoviValoriAlBimbo(Omino genitore1, Omino genitore2, Omino bimbo) {
+		Random r = ((Pasquisland) Gdx.app.getApplicationListener()).getRandom();
+		bimbo.setValues(
+				MathUtils.clamp(genitore1.strength + genitore2.strength * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_STRENGTH, Omino.MAX_STRENGTH),
+				MathUtils.clamp(genitore1.sociality + genitore2.sociality * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_SOCIALITY, Omino.MAX_SOCIALITY),
+				MathUtils.clamp(genitore1.speed + genitore2.speed * r.nextFloat() / 10 * (r.nextInt(3) - 1), Omino.MIN_SPEED, Omino.MAX_SPEED));
+	}
+
 	public void vediRect(Rectangle rettangolo) {
 		nellaGriglia.clear();
 		int xgs= (int) (rettangolo.x/map.tile_size);//vertice basso sx griglia
@@ -260,19 +256,16 @@ public class Mappone {
 					}
 				}
 			}	
-	
+
 	public void spawnaPalmaQuaVicino(GridPoint2 posizione) {
-		for(int y= posizione.y-1; y<=posizione.y+1; y++) {
-			if(y< map.getHeight() && y>=0)
-				for(int x= posizione.x-1; x<=posizione.x+1; x++) {
-					if(x< map.getWidth() && x>=0)
-						if(map.getTerrainTypeAt(x, y)== map.land_id) {
-							if(!presente(x,y,Palma.class)) {
-								Palma palmetta= new Palma(x*map.tile_size,y*map.tile_size);
-								da_aggiornare.add(palmetta);
-								chiCeStaQua(x, y).add(palmetta);
-								return;
-			}		}		}	
+	posRandom newpos= posizioneIntorno(posizione);
+	if(map.getTerrainTypeAt(newpos.gridposition.x, newpos.gridposition.y)== map.land_id) {
+		if(!presente(newpos.gridposition.x,newpos.gridposition.y,Palma.class)) {
+			Palma palmetta= new Palma(newpos.gridposition.x*map.tile_size,newpos.gridposition.y*map.tile_size);
+			da_aggiornare.add(palmetta);
+			chiCeStaQua(newpos.gridposition.x, newpos.gridposition.y).add(palmetta);
+			return;
+			}
 		}
 	}
 	
@@ -284,7 +277,6 @@ public class Mappone {
 		return false;
 	}
 	
+
+
 }
-
-
-

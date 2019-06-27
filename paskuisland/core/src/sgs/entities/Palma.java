@@ -13,10 +13,10 @@ import sgs.pasquisland.Pasquisland;
 public class Palma extends Entity{
 	
 	private static int MIN_PALME_PER_RIPRODURSI = 0;
-	private static int MAX_PALME_PER_RIPRODURSI = 5;
+	private static int MAX_PALME_PER_RIPRODURSI = 10;
 	
-	private static float MIN_REPRODUCTION_TIME = .1f;
-	private static float MAX_REPRODUCTION_TIME = 1;
+	private static float MIN_REPRODUCTION_TIME = .5f;
+	private static float MAX_REPRODUCTION_TIME = 1f;
 
 	public static Texture texture = new Texture(Gdx.files.internal("cespuglio.png"));
 	
