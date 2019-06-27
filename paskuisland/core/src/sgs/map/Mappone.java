@@ -81,6 +81,11 @@ public class Mappone {
 		disegnaEntita(batch);
 		batch.disableBlending();
 		batch.end();
+		for( Entity e: nellaGriglia) {
+			if(e.life<0) {
+				nellaGriglia.removeValue(e, true);
+			}
+		}
 	}
 	
 	public void disegnaMappetta(ShapeRenderer sr, int[] che_se_vede) {

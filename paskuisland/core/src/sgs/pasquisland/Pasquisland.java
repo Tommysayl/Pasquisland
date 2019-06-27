@@ -18,7 +18,7 @@ import sgs.ui.MainUI;
 
 /**
  * Ciao belli,
- * questa Ã¨ la classe che gestisce tutte le cose , Ã¨ la classe centrale che chiama
+ * questa è la classe che gestisce tutte le cose , è la classe centrale che chiama
  * e crea le altre classi!
  *
  */

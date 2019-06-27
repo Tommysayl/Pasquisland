@@ -114,7 +114,7 @@ public class Omino extends Entity {
 		batch.setColor(Color.WHITE);
 	}
 	
-	//metodo che prende in input un array con tutte le entitï¿½ vicine all'omino e decide cosa fare => non returna niente
+	//metodo che prende in input un array con tutte le entità vicine all'omino e decide cosa fare => non returna niente
 	public void cheDevoFa() { 
 		Array<Entity> Dintorni = Mappone.getInstance().vedi(this, Omino.RAGGIO_VISIVO); //ritorna la lista per CheDevoFa di tipi generici importando la funzione vedi da mappone
 		//Rimuoviamo dalla lista quelli con cui ci siamo appena accoppiati
@@ -157,7 +157,7 @@ public class Omino extends Entity {
 	    for (int i = 0; i < Score.length;i++) {
 		    if (Score[i] >= max ) {
 		    	max = Score[i];
-		    	j = i; //j ï¿½ l'indice del massimo
+		    	j = i; //j è l'indice del massimo
 		    }  
 	    }
 	    
